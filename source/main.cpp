@@ -5,6 +5,7 @@
 #include <array>
 #include <iostream>
 #include <ranges>
+#include <algorithm>
 #include <SFML/Graphics.hpp>
 
 using std::cout;
@@ -28,6 +29,7 @@ int main()
 	window.clear(bgColor);
 	window.display();
 	window.setFramerateLimit(30);
+	window.setKeyRepeatEnabled(false);
 
 	auto buttons = std::to_array<DraggableButton>
 	({
@@ -46,6 +48,7 @@ int main()
 		Vector2 {   0, -200},
 	});
 
+	bool snappingEnabled = false;
 	while (window.isOpen()) try
 	{
 		window.clear(bgColor);
@@ -67,22 +70,34 @@ int main()
 				for (auto& button : buttons)
 					button.Unclick();
 				break;
+			case sf::Event::KeyPressed:
+				if (event.key.code == sf::Keyboard::Space)
+					snappingEnabled ^= true;
+				break;
 			}
 		}
 
-		const PolygonalChain polygonalChain {
+		PolygonalChain polygonalChain {
 			buttons |
 			std::views::take(5) |
 			std::views::transform(&DraggableButton::GetPos),
 			{250, 0, 30}
 		};
 
-		const Polygon polygon {
+		Polygon polygon {
 			buttons |
 			std::views::drop(5) |
 			std::views::transform(&DraggableButton::GetPos),
 			{0, 255, 30}
 		};
+
+		if (snappingEnabled)
+		{
+			const int64_t mask = ~0x1fll;
+			auto snap = [](auto& p) { p.x &= mask; p.y &= mask; };
+			std::ranges::for_each(polygon.points, snap);
+			std::ranges::for_each(polygonalChain.points, snap);
+		}
 
 		window.draw(polygon);
 		window.draw(polygonalChain);

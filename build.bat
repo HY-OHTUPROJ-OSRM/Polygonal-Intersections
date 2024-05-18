@@ -9,3 +9,4 @@ if %errorlevel% == 0 (
 ) else (
 	pause
 )
+exit

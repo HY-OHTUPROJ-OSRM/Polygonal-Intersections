@@ -48,7 +48,7 @@ inline auto Dot(const sf::Vector2<T>& a, const sf::Vector2<T>& b)
 
 struct Rational
 {
-	int64_t nom, den;
+	int64_t nom, den = 1;
 
 	constexpr Rational operator+(Rational other) const
 	{
