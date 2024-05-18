@@ -1,6 +1,12 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "math.h"
+#include "polygonal_chain.h"
+
+constexpr unsigned screenWidth  = 1280;
+constexpr unsigned screenHeight = 720;
+constexpr unsigned screenMidX = screenWidth  / 2;
+constexpr unsigned screenMidY = screenHeight / 2;
 
 inline const sf::Color markerColor = {156, 158, 232};
 
@@ -32,3 +38,46 @@ const sf::CircleShape& GetPointMarker(const sf::Vector2<T>& pos, sf::Color color
 {
 	return GetPointMarker(static_cast<sf::Vector2f>(pos), color, filled);
 }
+
+template<class T = int64_t>
+inline sf::Vector2f ToScreenCoordinates(const sf::Vector2<T>& v)
+{
+	return
+	{
+		static_cast<float>(screenMidX + v.x),
+		static_cast<float>(screenMidY - v.y)
+	};
+}
+
+template<class T = int64_t>
+inline sf::Vector2<T> ToWorldCoordinates(const sf::Vector2<T>& v)
+{
+	return {v.x - screenMidX, screenMidY - v.y};
+}
+
+template<bool circular = false>
+struct DrawablePolygonalChain : public PolygonalChain<circular>, public sf::Drawable
+{
+	using PolygonalChain<circular>::points;
+	sf::Color color;
+
+	template<class... Args>
+	constexpr DrawablePolygonalChain(sf::Color color, Args&&... args):
+		PolygonalChain<circular>(std::forward<Args>(args)...), color(color) {}
+
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override
+	{
+		std::vector<sf::Vertex> verts;
+		verts.reserve(points.size() + circular);
+
+		for (auto& point : points)
+			verts.emplace_back(ToScreenCoordinates(point), color);
+
+		if (circular && verts.size() > 0)
+			verts.push_back(verts.front());
+
+		target.draw(verts.data(), verts.size(), sf::LineStrip, states);
+	}
+};
+
+using DrawablePolygon = DrawablePolygonalChain<true>;

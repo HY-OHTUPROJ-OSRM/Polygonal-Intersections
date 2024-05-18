@@ -2,14 +2,11 @@
 #include "math.h"
 #include <optional>
 
-struct LineSegment : public sf::Drawable
+struct LineSegment
 {
 	Vector2 a, b;
-	sf::Color color;
 
-	LineSegment(const Vector2& a, const Vector2& b, sf::Color color):
-		a(a), b(b), color(color)
-	{}
+	constexpr LineSegment(const Vector2& a, const Vector2& b) : a(a), b(b) {}
 
 	sf::Vector2<Rational> eval(Rational t) const
 	{
@@ -29,19 +26,6 @@ struct LineSegment : public sf::Drawable
 		const Vector2 diff = b - a;
 
 		return Dot(point - a, diff) >= 0 && Dot(point - b, diff) <= 0;
-	}
-
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override
-	{
-		const auto verts = std::array
-		{
-			sf::Vertex{ToScreenCoordinates(a), color},
-			sf::Vertex{ToScreenCoordinates(b), color}
-		};
-		
-		target.draw(verts.data(), verts.size(), sf::Lines, states);
-
-		(void)states;
 	}
 };
 

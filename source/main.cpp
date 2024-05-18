@@ -77,18 +77,18 @@ int main()
 			}
 		}
 
-		PolygonalChain polygonalChain {
+		DrawablePolygonalChain polygonalChain {
+			{250, 0, 30},
 			buttons |
 			std::views::take(5) |
 			std::views::transform(&DraggableButton::GetPos),
-			{250, 0, 30}
 		};
 
-		Polygon polygon {
+		DrawablePolygon polygon {
+			{0, 255, 30},
 			buttons |
 			std::views::drop(5) |
 			std::views::transform(&DraggableButton::GetPos),
-			{0, 255, 30}
 		};
 
 		if (snappingEnabled)
