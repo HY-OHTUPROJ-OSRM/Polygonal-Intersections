@@ -49,21 +49,23 @@ inline sf::Vector2f ToScreenCoordinates(const sf::Vector2<T>& v)
 	};
 }
 
-template<class T = int64_t>
-inline sf::Vector2<T> ToWorldCoordinates(const sf::Vector2<T>& v)
+template<class T, class R = int64_t>
+inline sf::Vector2<R> ToWorldCoordinates(const sf::Vector2<T>& v)
 {
 	return {v.x - screenMidX, screenMidY - v.y};
 }
 
-template<bool circular = false>
-struct DrawablePolygonalChain : public PolygonalChain<circular>, public sf::Drawable
+template<class Base = PolygonalChain>
+struct DrawablePolygonalChain : public Base, public sf::Drawable
 {
-	using PolygonalChain<circular>::points;
+	static constexpr bool circular = std::is_same_v<Base, Polygon>;
+
+	using Base::points;
 	sf::Color color;
 
 	template<class... Args>
-	constexpr DrawablePolygonalChain(sf::Color color, Args&&... args):
-		PolygonalChain<circular>(std::forward<Args>(args)...), color(color) {}
+	DrawablePolygonalChain(sf::Color color, Args&&... args):
+		Base(std::forward<Args>(args)...), color(color) {}
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override
 	{
@@ -80,4 +82,4 @@ struct DrawablePolygonalChain : public PolygonalChain<circular>, public sf::Draw
 	}
 };
 
-using DrawablePolygon = DrawablePolygonalChain<true>;
+using DrawablePolygon = DrawablePolygonalChain<Polygon>;

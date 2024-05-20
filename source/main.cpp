@@ -7,6 +7,7 @@
 #include <ranges>
 #include <algorithm>
 #include <SFML/Graphics.hpp>
+#include <windows.h>
 
 using std::cout;
 
@@ -31,6 +32,12 @@ int main()
 	window.setFramerateLimit(30);
 	window.setKeyRepeatEnabled(false);
 
+	char windows_dir[MAX_PATH];
+	GetWindowsDirectory(windows_dir, MAX_PATH);
+
+	sf::Font main_font;
+	main_font.loadFromFile(std::string(windows_dir) + std::string("\\Fonts\\seguisb.ttf"));
+
 	auto buttons = std::to_array<DraggableButton>
 	({
 		// Polygonal chain
@@ -52,7 +59,7 @@ int main()
 	while (window.isOpen()) try
 	{
 		window.clear(bgColor);
-		const Vector2 mousePos = ToVector2(sf::Mouse::getPosition(window));
+		const Vector2 mouseScreenPos = ToVector2(sf::Mouse::getPosition(window));
 		
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -91,13 +98,28 @@ int main()
 			std::views::transform(&DraggableButton::GetPos),
 		};
 
+		Vector2 mousePos = ToWorldCoordinates(mouseScreenPos);
+
 		if (snappingEnabled)
 		{
 			const int64_t mask = ~0x1fll;
 			auto snap = [](auto& p) { p.x &= mask; p.y &= mask; };
 			std::ranges::for_each(polygon.points, snap);
 			std::ranges::for_each(polygonalChain.points, snap);
+			snap(mousePos);
 		}
+
+		const sf::Vector2f snappedMouseScreenPos = ToScreenCoordinates(mousePos);
+		sf::Text text(polygon.contains(mousePos) ? "Inside" : "Outside", main_font);
+		text.setPosition(snappedMouseScreenPos.x + 35, snappedMouseScreenPos.y - 50);
+		window.draw(text);
+
+		const sf::Vertex indicator[] = {
+			{snappedMouseScreenPos,                         sf::Color::White},
+			{snappedMouseScreenPos + sf::Vector2f{30, -30}, sf::Color::White}
+		};
+
+		window.draw(indicator, 2, sf::LineStrip);
 
 		window.draw(polygon);
 		window.draw(polygonalChain);
@@ -109,7 +131,7 @@ int main()
 
 		for (auto& button : buttons)
 		{
-			button.UpdatePos(mousePos);
+			button.UpdatePos(mouseScreenPos);
 			window.draw(button);
 		}
 

@@ -3,18 +3,15 @@
 #include "math.h"
 #include <vector>
 
-template<bool circular = false>
-struct PolygonalChain
+struct BasePolygonalChain
 {
 	std::vector<Vector2> points;
 
 	template<class It>
-	constexpr PolygonalChain(It begin, It end):
-		points(begin, end) {}
+	BasePolygonalChain(It begin, It end) : points(begin, end) {}
 
 	template<class Range>
-	constexpr PolygonalChain(Range&& range):
-		points(std::begin(range), std::end(range)) {}
+	BasePolygonalChain(Range&& range) : points(std::begin(range), std::end(range)) {}
 
 	struct Iterator
 	{
@@ -22,26 +19,37 @@ struct PolygonalChain
 
 		LineSegment operator*() const { return {*start_point, *end_point}; }
 
-		constexpr Iterator& operator++() & { return start_point = end_point++, *this; }
+		Iterator& operator++() & { return start_point = end_point++, *this; }
 
-		constexpr bool operator==(const Iterator& other) const
+		bool operator==(const Iterator& other) const
 		{
 			return this->end_point == other.end_point;
 		}
 	};
 
-	constexpr Iterator begin() const &
+	Iterator end() const & { return {points.end(), points.end()}; }
+};
+
+struct PolygonalChain : public BasePolygonalChain
+{
+	Iterator begin() const &
 	{
 		if (points.begin() == points.end())
 			return {points.end(), points.end()};
-
-		if constexpr (circular)
-			return {std::prev(points.end()), points.begin()};
 		else
 			return {points.begin(), std::next(points.begin())};
 	}
-
-	constexpr Iterator end() const & { return {points.end(), points.end()}; }
 };
 
-using Polygon = PolygonalChain<true>;
+struct Polygon : public BasePolygonalChain
+{
+	Iterator begin() const &
+	{
+		if (points.begin() == points.end())
+			return {points.end(), points.end()};
+		else
+			return {std::prev(points.end()), points.begin()};
+	}
+
+	bool contains(const Vector2& point) const;
+};
