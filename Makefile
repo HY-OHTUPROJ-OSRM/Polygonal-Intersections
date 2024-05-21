@@ -21,11 +21,7 @@ CLI_OFILES := $(foreach file,$(CLI_CPPFILES:.cpp=.o),$(CLI_BUILD)/$(file))
 
 INCLUDE := $(foreach dir,$(INCLUDES),-I$(dir))
 
-ifeq ($(shell test -e g++ && echo -n exists),exists)
-	CXX := g++
-else
-	CXX := C:/winlibs-x86_64-posix-seh-gcc-10.1.0-llvm-10.0.0-mingw-w64-7.0.0-r3/mingw64/bin/g++.exe
-endif
+CXX := g++
 
 CXXFLAGS := $(INCLUDE) -std=c++20 -O3 -Wall -Wextra -Wno-switch
 
