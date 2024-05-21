@@ -1,32 +1,81 @@
-SOURCES       := source
-INCLUDES      := $(SOURCES)
-BUILD         := build
-TARGET        := Polygonal-Intersections
+ALG_SOURCE := source/algorithm
+GUI_SOURCE := source/gui
+CLI_SOURCE := source/cli
 
-export OUTPUT := $(CURDIR)/bin/$(TARGET)
-export VPATH  := $(foreach dir,$(SOURCES),$(CURDIR)/$(dir))
+ALG_BUILD := build/algorithm
+GUI_BUILD := build/gui
+CLI_BUILD := build/cli
 
-CFILES   := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
-CPPFILES := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+GUI_OUTPUT := bin/gui/Polygonal-Intersections-GUI
+CLI_OUTPUT := bin/cli/Polygonal-Intersections-CLI
 
-export OFILES := $(foreach file,$(CPPFILES:.cpp=.o) $(CFILES:.c=.o),$(BUILD)/$(file))
-export INCLUDE := $(foreach dir,$(INCLUDES),-I$(dir))
+INCLUDES := $(ALG_SOURCE)
 
-CXX := C:/winlibs-x86_64-posix-seh-gcc-10.1.0-llvm-10.0.0-mingw-w64-7.0.0-r3/mingw64/bin/g++.exe
+ALG_CPPFILES := $(notdir $(wildcard $(ALG_SOURCE)/*.cpp))
+GUI_CPPFILES := $(notdir $(wildcard $(GUI_SOURCE)/*.cpp))
+CLI_CPPFILES := $(notdir $(wildcard $(CLI_SOURCE)/*.cpp))
+
+ALG_OFILES := $(foreach file,$(ALG_CPPFILES:.cpp=.o),$(ALG_BUILD)/$(file))
+GUI_OFILES := $(foreach file,$(GUI_CPPFILES:.cpp=.o),$(GUI_BUILD)/$(file))
+CLI_OFILES := $(foreach file,$(CLI_CPPFILES:.cpp=.o),$(CLI_BUILD)/$(file))
+
+INCLUDE := $(foreach dir,$(INCLUDES),-I$(dir))
+
+ifeq ($(shell test -e g++ && echo -n exists),exists)
+	CXX := g++
+else
+	CXX := C:/winlibs-x86_64-posix-seh-gcc-10.1.0-llvm-10.0.0-mingw-w64-7.0.0-r3/mingw64/bin/g++.exe
+endif
 
 CXXFLAGS := $(INCLUDE) -std=c++20 -O3 -Wall -Wextra -Wno-switch
 
-LDFLAGS := bin/sfml-graphics-2.dll \
-           bin/sfml-window-2.dll \
-           bin/sfml-system-2.dll \
-           -Wl,-subsystem,console
+GUI_LDFLAGS := bin/gui/sfml-graphics-2.dll \
+               bin/gui/sfml-window-2.dll \
+               bin/gui/sfml-system-2.dll \
+               -Wl,-subsystem,console
 
-$(OUTPUT): $(OFILES)
-	@echo linking...
-	$(CXX) -o $@ $^ $(LDFLAGS)
+CLI_LDFLAGS := -static-libgcc -static-libstdc++
 
-$(BUILD)/%.o: %.cpp
-	@echo $(notdir $<)
-	$(CXX) -MMD -MP -MF $(BUILD)/$*.d $(CXXFLAGS) -c $< -o $@
+.PHONY: gui cli gui_dirs cli_dirs alg_dirs clean
 
--include $(BUILD)/*.d
+all: gui cli
+
+gui_dirs:
+	@mkdir -p $(GUI_BUILD) bin/gui
+
+cli_dirs:
+	@mkdir -p $(CLI_BUILD) bin/cli
+
+alg_dirs:
+	@mkdir -p $(ALG_BUILD)
+
+gui: $(GUI_OUTPUT)
+cli: $(CLI_OUTPUT)
+
+clean:
+	@echo clean...
+	@rm -fr build $(GUI_OUTPUT) $(CLI_OUTPUT)
+
+$(GUI_OUTPUT): $(ALG_OFILES) $(GUI_OFILES)
+	@printf \n$(notdir $(GUI_OUTPUT))\n
+	$(CXX) -o $@ $^ $(GUI_LDFLAGS)
+
+$(CLI_OUTPUT): $(ALG_OFILES) $(CLI_OFILES)
+	@printf \n$(notdir $(CLI_OUTPUT))\n
+	$(CXX) -o $@ $^ $(CLI_LDFLAGS)
+
+$(ALG_BUILD)/%.o: $(ALG_SOURCE)/%.cpp | alg_dirs
+	@printf \n$<\n
+	$(CXX) -MMD -MP -MF $(dir $@)$*.d $(CXXFLAGS) -c $< -o $@
+
+$(GUI_BUILD)/%.o: $(GUI_SOURCE)/%.cpp | gui_dirs
+	@printf \n$<\n
+	$(CXX) -MMD -MP -MF $(dir $@)$*.d $(CXXFLAGS) -c $< -o $@
+
+$(CLI_BUILD)/%.o: $(CLI_SOURCE)/%.cpp | cli_dirs
+	@printf \n$<\n
+	$(CXX) -MMD -MP -MF $(dir $@)$*.d $(CXXFLAGS) -c $< -o $@
+
+-include $(ALG_BUILD)/*.d
+-include $(GUI_BUILD)/*.d
+-include $(CLI_BUILD)/*.d

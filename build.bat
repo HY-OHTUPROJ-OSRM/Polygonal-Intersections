@@ -4,8 +4,8 @@ make
 
 if %errorlevel% == 0 (
 	echo ===========================================================================
-	cd bin
-	"Polygonal-Intersections.exe"
+	cd bin/gui
+	"Polygonal-Intersections-GUI.exe"
 ) else (
 	pause
 )

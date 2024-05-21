@@ -1,4 +1,4 @@
-#include "ui.h"
+#include "gui.h"
 #include "math.h"
 #include "polygonal_chain.h"
 

@@ -1,4 +1,4 @@
-#include "ui.h"
+#include "gui.h"
 
 constexpr int pointMarkerRadius = 10;
 
