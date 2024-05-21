@@ -55,6 +55,27 @@ inline sf::Vector2<R> ToWorldCoordinates(const sf::Vector2<T>& v)
 	return {v.x - screenMidX, screenMidY - v.y};
 }
 
+inline void drawLabel(
+	sf::RenderTarget& target,
+	const char* string,
+	const sf::Font& font,
+	const sf::Vector2f& pos,
+	const sf::Vector2f& offset,
+	sf::Color color)
+{
+	sf::Text text(string, font);
+
+	const auto endPos = pos + offset;
+
+	text.setPosition(endPos.x + 5, endPos.y - 20);
+	text.setFillColor(color);
+	target.draw(text);
+
+	const sf::Vertex indicator[] = {{pos, color}, {endPos, color}};
+
+	target.draw(indicator, 2, sf::LineStrip);
+}
+
 template<class Base = PolygonalChain>
 struct DrawablePolygonalChain : public Base, public sf::Drawable
 {

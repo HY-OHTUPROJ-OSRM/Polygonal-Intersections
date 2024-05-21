@@ -2,7 +2,7 @@
 #include <cassert>
 #include <utility>
 
-std::optional<sf::Vector2<Rational>> find_intersection(const LineSegment& ls1, const LineSegment& ls2)
+std::optional<Rational> find_intersection(const LineSegment& ls1, const LineSegment& ls2)
 {
 	const auto dir1 = ls1.b - ls1.a;
 	const auto dir2 = ls2.b - ls2.a;
@@ -16,7 +16,7 @@ std::optional<sf::Vector2<Rational>> find_intersection(const LineSegment& ls1, c
 			return std::nullopt; // The line segments are parallel but not collinear
 
 		if (ls2.contains_projection(ls1.a))
-			return {sf::Vector2<Rational>{ls1.a}}; // The first segment starts on the second segment
+			return {{0}}; // The first segment starts on the second segment
 
 		const auto& [first_point, min_dot] = [&]() -> std::pair<const Vector2&, int64_t>
 		{
@@ -29,8 +29,10 @@ std::optional<sf::Vector2<Rational>> find_intersection(const LineSegment& ls1, c
 				return {ls2.b, dot_b};
 		}();
 
-		if (0 < min_dot && min_dot <= Dot(dir1, dir1))
-			return {sf::Vector2<Rational>{first_point}};
+		const int64_t magSquared = Dot(dir1, dir1);
+
+		if (0 < min_dot && min_dot <= magSquared)
+			return {{min_dot, magSquared}};
 		else
 			return std::nullopt;
 	}
@@ -47,5 +49,5 @@ std::optional<sf::Vector2<Rational>> find_intersection(const LineSegment& ls1, c
 
 	assert(ls1.eval(t1) == ls2.eval(t2));
 
-	return ls1.eval(t1);
+	return t1;
 }

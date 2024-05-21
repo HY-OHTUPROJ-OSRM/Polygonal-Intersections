@@ -29,4 +29,4 @@ struct LineSegment
 	}
 };
 
-std::optional<sf::Vector2<Rational>> find_intersection(const LineSegment& ls1, const LineSegment& ls2);
+std::optional<Rational> find_intersection(const LineSegment& ls1, const LineSegment& ls2);

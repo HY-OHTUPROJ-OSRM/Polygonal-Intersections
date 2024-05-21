@@ -22,7 +22,11 @@ bool Polygon::contains(const Vector2& point) const
 		// If no vertical line intersects both the point and
 		// the edge, excluding the edge's rightmost point
 		if (!(edge.a.x <= point.x && point.x < edge.b.x))
+		{
+			if (point == edge.b) return true;
+
 			continue;
+		}
 
 		const Vector2 u = edge.b - edge.a;
 		const Vector2 v = point - edge.a;
@@ -36,4 +40,28 @@ bool Polygon::contains(const Vector2& point) const
 	}
 
 	return parity;
+}
+
+std::optional<sf::Vector2<Rational>> PolygonalChain::find_first_intersection(const Polygon& polygon) const
+{
+	if (!points.empty() && polygon.contains(points.front()))
+		return {sf::Vector2<Rational>{points.front()}};
+
+	for (LineSegment ls1 : *this)
+	{
+		std::optional<Rational> first_intersection;
+
+		for (LineSegment ls2 : polygon)
+		{
+			const auto intersection = find_intersection(ls1, ls2);
+
+			if (intersection && (!first_intersection || *intersection < *first_intersection))
+				first_intersection = intersection;
+		}
+
+		if (first_intersection)
+			return {ls1.eval(*first_intersection)};
+	}
+
+	return std::nullopt;
 }

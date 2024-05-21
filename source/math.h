@@ -53,6 +53,29 @@ struct Rational
 		return this->nom * other.den == this->den * other.nom;
 	}
 
+	constexpr bool operator<(Rational other) const
+	{
+		if (this->den * other.den > 0)
+			return this->nom * other.den < this->den * other.nom;
+		else
+			return this->nom * other.den > this->den * other.nom;
+	}
+
+	constexpr bool operator>(Rational other) const
+	{
+		return other < *this;
+	}
+
+	constexpr bool operator<=(Rational other) const
+	{
+		return !(other < *this);
+	}
+
+	constexpr bool operator>=(Rational other) const
+	{
+		return !(*this < other);
+	}
+
 	template<class T>
 	constexpr explicit operator T() const
 	{

@@ -30,17 +30,6 @@ struct BasePolygonalChain
 	Iterator end() const & { return {points.end(), points.end()}; }
 };
 
-struct PolygonalChain : public BasePolygonalChain
-{
-	Iterator begin() const &
-	{
-		if (points.begin() == points.end())
-			return {points.end(), points.end()};
-		else
-			return {points.begin(), std::next(points.begin())};
-	}
-};
-
 struct Polygon : public BasePolygonalChain
 {
 	Iterator begin() const &
@@ -52,4 +41,17 @@ struct Polygon : public BasePolygonalChain
 	}
 
 	bool contains(const Vector2& point) const;
+};
+
+struct PolygonalChain : public BasePolygonalChain
+{
+	Iterator begin() const &
+	{
+		if (points.begin() == points.end())
+			return {points.end(), points.end()};
+		else
+			return {points.begin(), std::next(points.begin())};
+	}
+
+	std::optional<sf::Vector2<Rational>> find_first_intersection(const Polygon& polygon) const;
 };

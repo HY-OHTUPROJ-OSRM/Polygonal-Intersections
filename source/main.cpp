@@ -109,25 +109,65 @@ int main()
 			snap(mousePos);
 		}
 
-		const sf::Vector2f snappedMouseScreenPos = ToScreenCoordinates(mousePos);
-		sf::Text text(polygon.contains(mousePos) ? "Inside" : "Outside", main_font);
-		text.setPosition(snappedMouseScreenPos.x + 35, snappedMouseScreenPos.y - 50);
-		window.draw(text);
+		const bool inside = polygon.contains(mousePos);
 
-		const sf::Vertex indicator[] = {
-			{snappedMouseScreenPos,                         sf::Color::White},
-			{snappedMouseScreenPos + sf::Vector2f{30, -30}, sf::Color::White}
-		};
-
-		window.draw(indicator, 2, sf::LineStrip);
+		drawLabel(
+			window,
+			inside ? "Inside" : "Outside",
+			main_font,
+			ToScreenCoordinates(mousePos),
+			sf::Vector2f{30, -30},
+			inside ? sf::Color{0, 255, 30} : markerColor
+		);
 
 		window.draw(polygon);
 		window.draw(polygonalChain);
 
+		if (!polygonalChain.points.empty())
+		{
+			drawLabel(
+				window,
+				"Start",
+				main_font,
+				ToScreenCoordinates(polygonalChain.points.front()),
+				sf::Vector2f{30, 30},
+				markerColor
+			);
+
+			drawLabel(
+				window,
+				"End",
+				main_font,
+				ToScreenCoordinates(polygonalChain.points.back()),
+				sf::Vector2f{30, 30},
+				markerColor
+			);
+		}
+
 		for (LineSegment ls1 : polygonalChain)
 			for (LineSegment ls2 : polygon)
 				if (auto intersection = find_intersection(ls1, ls2))
-					window.draw(GetPointMarker(*intersection, sf::Color::Yellow));
+					window.draw(GetPointMarker(ls1.eval(*intersection), sf::Color::Yellow));
+
+		const char* status = "No intersections";
+
+		if (auto first_intersection = polygonalChain.find_first_intersection(polygon))
+		{
+			drawLabel(
+				window,
+				"First intersection",
+				main_font,
+				ToScreenCoordinates(sf::Vector2f{*first_intersection}),
+				sf::Vector2f{30, -30},
+				sf::Color::Yellow
+			);
+
+			status = "At least one intersection exists";
+		}
+
+		sf::Text statusText(status, main_font);
+		statusText.setPosition(30, 30);
+		window.draw(statusText);
 
 		for (auto& button : buttons)
 		{
