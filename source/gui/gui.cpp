@@ -2,7 +2,7 @@
 
 constexpr int pointMarkerRadius = 10;
 
-void DraggableButton::Click(const Vector2& clickedPos)
+void DraggableButton::Click(sf::Vector2i clickedPos)
 {
 	const Vector2 offset = pos - ToWorldCoordinates(clickedPos);
 
@@ -13,7 +13,7 @@ void DraggableButton::Click(const Vector2& clickedPos)
 	}
 }
 
-void DraggableButton::UpdatePos(const Vector2& mousePos)
+void DraggableButton::UpdatePos(sf::Vector2i mousePos)
 {
 	if (!clicked) return;
 
@@ -31,7 +31,7 @@ void DraggableButton::draw(sf::RenderTarget& target, sf::RenderStates states) co
 	target.draw(GetPointMarker(pos, color, clicked), states);
 }
 
-const sf::CircleShape& GetPointMarker(const sf::Vector2f& pos, sf::Color color, bool filled)
+const sf::CircleShape& GetPointMarker(sf::Vector2f screenPos, sf::Color color, bool filled)
 {
 	struct Marker : sf::CircleShape
 	{
@@ -43,7 +43,7 @@ const sf::CircleShape& GetPointMarker(const sf::Vector2f& pos, sf::Color color, 
 	}
 	static marker;
 
-	marker.setPosition(ToScreenCoordinates<float>(pos));
+	marker.setPosition(screenPos);
 	marker.setOutlineColor(color);
 	marker.setFillColor(filled ? color : sf::Color::Transparent);
 

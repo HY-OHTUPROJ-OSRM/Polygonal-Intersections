@@ -1,25 +1,28 @@
 #pragma once
-#include "math.h"
+#include "vector.h"
+#include "rational.h"
 #include <optional>
 
 struct LineSegment
 {
 	Vector2 a, b;
 
-	constexpr LineSegment(const Vector2& a, const Vector2& b) : a(a), b(b) {}
+	constexpr LineSegment(Vector2 a, Vector2 b) : a(a), b(b) {}
 
-	sf::Vector2<Rational> eval(Rational t) const
+	// Returns the result of linear interpolation in homogeneous coordinates
+	constexpr Vector3 eval(Rational t) const
 	{
 		const Vector2 diff = b - a;
 
 		return {
-			Rational{t.den * a.x + t.nom * diff.x, t.den},
-			Rational{t.den * a.y + t.nom * diff.y, t.den}
+			t.den * a.x + t.nom * diff.x,
+			t.den * a.y + t.nom * diff.y,
+			t.den
 		};
 	}
 
 	// Checks if the segment contains the orthogonal projection of the given point
-	bool contains_projection(const Vector2& point) const
+	constexpr bool contains_projection(Vector2 point) const
 	{
 		if (a == b) return point == a;
 

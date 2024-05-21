@@ -1,6 +1,4 @@
 #include "gui.h"
-#include "math.h"
-#include "polygonal_chain.h"
 
 #include <array>
 #include <iostream>
@@ -59,7 +57,7 @@ int main()
 	while (window.isOpen()) try
 	{
 		window.clear(bgColor);
-		const Vector2 mouseScreenPos = ToVector2(sf::Mouse::getPosition(window));
+		const auto mouseScreenPos = sf::Mouse::getPosition(window);
 		
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -71,7 +69,7 @@ int main()
 				break;
 			case sf::Event::MouseButtonPressed:
 				for (auto& button : buttons)
-					button.Click(ToVector2(event.mouseButton.x, event.mouseButton.y));
+					button.Click({event.mouseButton.x, event.mouseButton.y});
 				break;
 			case sf::Event::MouseButtonReleased:
 				for (auto& button : buttons)
@@ -157,7 +155,7 @@ int main()
 				window,
 				"First intersection",
 				main_font,
-				ToScreenCoordinates(sf::Vector2f{*first_intersection}),
+				ToScreenCoordinates(*first_intersection),
 				sf::Vector2f{30, -30},
 				sf::Color::Yellow
 			);

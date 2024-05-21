@@ -1,9 +1,8 @@
 @echo off
 cd /D "%~dp0"
-make
+make gui
 
 if %errorlevel% == 0 (
-	echo ===========================================================================
 	cd bin/gui
 	"Polygonal-Intersections-GUI.exe"
 ) else (

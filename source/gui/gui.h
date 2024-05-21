@@ -1,12 +1,12 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "math.h"
-#include "polygonal_chain.h"
+#include "vector.h"
+#include "polygon.h"
 
-constexpr unsigned screenWidth  = 1280;
-constexpr unsigned screenHeight = 720;
-constexpr unsigned screenMidX = screenWidth  / 2;
-constexpr unsigned screenMidY = screenHeight / 2;
+constexpr int screenWidth  = 1280;
+constexpr int screenHeight = 720;
+constexpr int screenMidX = screenWidth  / 2;
+constexpr int screenMidY = screenHeight / 2;
 
 inline const sf::Color markerColor = {156, 158, 232};
 
@@ -18,49 +18,56 @@ class DraggableButton : public sf::Drawable
 	bool clicked = false;
 
 public:
-	DraggableButton(const Vector2& pos, sf::Color color = markerColor):
+	DraggableButton(Vector2 pos, sf::Color color = markerColor):
 		pos(pos), color(color)
 	{}
 
-	void Click(const Vector2& clickedPos);
+	void Click(sf::Vector2i clickedPos);
 	void Unclick() { clicked = false; }
-	void UpdatePos(const Vector2& mousePos);
+	void UpdatePos(sf::Vector2i mousePos);
 
 	const Vector2& GetPos() const { return pos; }
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };
 
-const sf::CircleShape& GetPointMarker(const sf::Vector2f& pos, sf::Color color = markerColor, bool filled = false);
+const sf::CircleShape& GetPointMarker(sf::Vector2f screenPos, sf::Color color = markerColor, bool filled = false);
 
-template<class T>
-const sf::CircleShape& GetPointMarker(const sf::Vector2<T>& pos, sf::Color color = markerColor, bool filled = false)
+const sf::CircleShape& GetPointMarker(auto pos, sf::Color color = markerColor, bool filled = false)
 {
-	return GetPointMarker(static_cast<sf::Vector2f>(pos), color, filled);
+	return GetPointMarker(ToScreenCoordinates(pos), color, filled);
 }
 
-template<class T = int64_t>
-inline sf::Vector2f ToScreenCoordinates(const sf::Vector2<T>& v)
+inline sf::Vector2f ToScreenCoordinates(Vector2 v)
 {
-	return
-	{
+	return {
 		static_cast<float>(screenMidX + v.x),
 		static_cast<float>(screenMidY - v.y)
 	};
 }
 
-template<class T, class R = int64_t>
-inline sf::Vector2<R> ToWorldCoordinates(const sf::Vector2<T>& v)
+inline sf::Vector2f ToScreenCoordinates(Vector3 v)
 {
-	return {v.x - screenMidX, screenMidY - v.y};
+	return {
+		screenMidX + static_cast<float>(v.x) / v.z,
+		screenMidY - static_cast<float>(v.y) / v.z
+	};
+}
+
+inline Vector2 ToWorldCoordinates(const auto& v)
+{
+	return {
+		static_cast<int64_t>(v.x - screenMidX),
+		static_cast<int64_t>(screenMidY - v.y)
+	};
 }
 
 inline void drawLabel(
 	sf::RenderTarget& target,
 	const char* string,
 	const sf::Font& font,
-	const sf::Vector2f& pos,
-	const sf::Vector2f& offset,
+	sf::Vector2f pos,
+	sf::Vector2f offset,
 	sf::Color color)
 {
 	sf::Text text(string, font);

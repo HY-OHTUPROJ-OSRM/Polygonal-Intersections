@@ -57,24 +57,29 @@ clean:
 	@rm -fr build $(GUI_OUTPUT) $(CLI_OUTPUT)
 
 $(GUI_OUTPUT): $(ALG_OFILES) $(GUI_OFILES)
-	@printf \n$(notdir $(GUI_OUTPUT))\n
+	@echo $(notdir $(GUI_OUTPUT))
 	$(CXX) -o $@ $^ $(GUI_LDFLAGS)
+	@echo
 
 $(CLI_OUTPUT): $(ALG_OFILES) $(CLI_OFILES)
-	@printf \n$(notdir $(CLI_OUTPUT))\n
+	@echo $(notdir $(CLI_OUTPUT))
 	$(CXX) -o $@ $^ $(CLI_LDFLAGS)
+	@echo
 
 $(ALG_BUILD)/%.o: $(ALG_SOURCE)/%.cpp | alg_dirs
-	@printf \n$<\n
+	@echo $<
 	$(CXX) -MMD -MP -MF $(dir $@)$*.d $(CXXFLAGS) -c $< -o $@
+	@echo
 
 $(GUI_BUILD)/%.o: $(GUI_SOURCE)/%.cpp | gui_dirs
-	@printf \n$<\n
+	@echo $<
 	$(CXX) -MMD -MP -MF $(dir $@)$*.d $(CXXFLAGS) -c $< -o $@
+	@echo
 
 $(CLI_BUILD)/%.o: $(CLI_SOURCE)/%.cpp | cli_dirs
-	@printf \n$<\n
+	@echo $<
 	$(CXX) -MMD -MP -MF $(dir $@)$*.d $(CXXFLAGS) -c $< -o $@
+	@echo
 
 -include $(ALG_BUILD)/*.d
 -include $(GUI_BUILD)/*.d

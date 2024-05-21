@@ -1,6 +1,7 @@
 #pragma once
 #include "line_segment.h"
-#include "math.h"
+#include "vector.h"
+#include "rational.h"
 #include <vector>
 
 struct BasePolygonalChain
@@ -40,7 +41,7 @@ struct Polygon : public BasePolygonalChain
 			return {std::prev(points.end()), points.begin()};
 	}
 
-	bool contains(const Vector2& point) const;
+	bool contains(Vector2 point) const;
 };
 
 struct PolygonalChain : public BasePolygonalChain
@@ -53,5 +54,5 @@ struct PolygonalChain : public BasePolygonalChain
 			return {points.begin(), std::next(points.begin())};
 	}
 
-	std::optional<sf::Vector2<Rational>> find_first_intersection(const Polygon& polygon) const;
+	std::optional<Vector3> find_first_intersection(const Polygon& polygon) const;
 };

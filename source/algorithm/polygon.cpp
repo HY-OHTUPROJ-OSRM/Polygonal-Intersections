@@ -1,6 +1,6 @@
-#include "polygonal_chain.h"
+#include "polygon.h"
 
-bool Polygon::contains(const Vector2& point) const
+bool Polygon::contains(Vector2 point) const
 {
 	int parity = 0;
 
@@ -42,10 +42,10 @@ bool Polygon::contains(const Vector2& point) const
 	return parity;
 }
 
-std::optional<sf::Vector2<Rational>> PolygonalChain::find_first_intersection(const Polygon& polygon) const
+std::optional<Vector3> PolygonalChain::find_first_intersection(const Polygon& polygon) const
 {
 	if (!points.empty() && polygon.contains(points.front()))
-		return {sf::Vector2<Rational>{points.front()}};
+		return {{points.front().x, points.front().y, 1}};
 
 	for (LineSegment ls1 : *this)
 	{

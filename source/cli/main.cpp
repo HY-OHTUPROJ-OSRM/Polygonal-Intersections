@@ -1,6 +1,5 @@
 #include <iostream>
-#include "math.h"
-#include "polygonal_chain.h"
+#include "polygon.h"
 
 int main()
 {
