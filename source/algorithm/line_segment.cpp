@@ -1,5 +1,4 @@
 #include "line_segment.h"
-#include <cassert>
 #include <utility>
 
 std::optional<Rational> find_intersection(const LineSegment& ls1, const LineSegment& ls2)
@@ -46,8 +45,6 @@ std::optional<Rational> find_intersection(const LineSegment& ls1, const LineSegm
 		t2.nom * det > det * det
 	)
 		return std::nullopt;
-
-	assert(ls1.eval(t1) == ls2.eval(t2));
 
 	return t1;
 }

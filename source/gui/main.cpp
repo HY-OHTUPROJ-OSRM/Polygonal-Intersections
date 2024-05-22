@@ -102,8 +102,8 @@ int main()
 		{
 			const int64_t mask = ~0x1fll;
 			auto snap = [](auto& p) { p.x &= mask; p.y &= mask; };
-			std::ranges::for_each(polygon.points, snap);
-			std::ranges::for_each(polygonalChain.points, snap);
+			std::ranges::for_each(polygon.vertices, snap);
+			std::ranges::for_each(polygonalChain.vertices, snap);
 			snap(mousePos);
 		}
 
@@ -121,13 +121,13 @@ int main()
 		window.draw(polygon);
 		window.draw(polygonalChain);
 
-		if (!polygonalChain.points.empty())
+		if (!polygonalChain.vertices.empty())
 		{
 			drawLabel(
 				window,
 				"Start",
 				main_font,
-				ToScreenCoordinates(polygonalChain.points.front()),
+				ToScreenCoordinates(polygonalChain.vertices.front()),
 				sf::Vector2f{30, 30},
 				markerColor
 			);
@@ -136,7 +136,7 @@ int main()
 				window,
 				"End",
 				main_font,
-				ToScreenCoordinates(polygonalChain.points.back()),
+				ToScreenCoordinates(polygonalChain.vertices.back()),
 				sf::Vector2f{30, 30},
 				markerColor
 			);

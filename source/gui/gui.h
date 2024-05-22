@@ -88,7 +88,7 @@ struct DrawablePolygonalChain : public Base, public sf::Drawable
 {
 	static constexpr bool circular = std::is_same_v<Base, Polygon>;
 
-	using Base::points;
+	using Base::vertices;
 	sf::Color color;
 
 	template<class... Args>
@@ -97,16 +97,16 @@ struct DrawablePolygonalChain : public Base, public sf::Drawable
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override
 	{
-		std::vector<sf::Vertex> verts;
-		verts.reserve(points.size() + circular);
+		std::vector<sf::Vertex> vertices_to_draw;
+		vertices_to_draw.reserve(vertices.size() + circular);
 
-		for (auto& point : points)
-			verts.emplace_back(ToScreenCoordinates(point), color);
+		for (auto& vertex : vertices)
+			vertices_to_draw.emplace_back(ToScreenCoordinates(vertex), color);
 
-		if (circular && verts.size() > 0)
-			verts.push_back(verts.front());
+		if (circular && vertices_to_draw.size() > 0)
+			vertices_to_draw.push_back(vertices_to_draw.front());
 
-		target.draw(verts.data(), verts.size(), sf::LineStrip, states);
+		target.draw(vertices_to_draw.data(), vertices_to_draw.size(), sf::LineStrip, states);
 	}
 };
 

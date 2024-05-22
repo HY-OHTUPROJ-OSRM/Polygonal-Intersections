@@ -44,8 +44,8 @@ bool Polygon::contains(Vector2 point) const
 
 std::optional<Vector3> PolygonalChain::find_first_intersection(const Polygon& polygon) const
 {
-	if (!points.empty() && polygon.contains(points.front()))
-		return {{points.front().x, points.front().y, 1}};
+	if (!vertices.empty() && polygon.contains(vertices.front()))
+		return {{vertices.front().x, vertices.front().y, 1}};
 
 	for (LineSegment ls1 : *this)
 	{

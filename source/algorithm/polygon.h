@@ -2,21 +2,26 @@
 #include "line_segment.h"
 #include "vector.h"
 #include "rational.h"
+#include <utility>
 #include <vector>
 
 struct BasePolygonalChain
 {
-	std::vector<Vector2> points;
+	std::vector<Vector2> vertices;
+
+	BasePolygonalChain() = default;
 
 	template<class It>
-	BasePolygonalChain(It begin, It end) : points(begin, end) {}
+	BasePolygonalChain(It begin, It end) : vertices(begin, end) {}
 
 	template<class Range>
-	BasePolygonalChain(Range&& range) : points(std::begin(range), std::end(range)) {}
+	BasePolygonalChain(Range&& range) : vertices(std::begin(range), std::end(range)) {}
+
+	BasePolygonalChain(std::vector<Vector2>&& vertices) : vertices(std::move(vertices)) {}
 
 	struct Iterator
 	{
-		decltype(points)::const_iterator start_point, end_point;
+		decltype(vertices)::const_iterator start_point, end_point;
 
 		LineSegment operator*() const { return {*start_point, *end_point}; }
 
@@ -28,17 +33,17 @@ struct BasePolygonalChain
 		}
 	};
 
-	Iterator end() const & { return {points.end(), points.end()}; }
+	Iterator end() const & { return {vertices.end(), vertices.end()}; }
 };
 
 struct Polygon : public BasePolygonalChain
 {
 	Iterator begin() const &
 	{
-		if (points.begin() == points.end())
-			return {points.end(), points.end()};
+		if (vertices.begin() == vertices.end())
+			return {vertices.end(), vertices.end()};
 		else
-			return {std::prev(points.end()), points.begin()};
+			return {std::prev(vertices.end()), vertices.begin()};
 	}
 
 	bool contains(Vector2 point) const;
@@ -48,10 +53,10 @@ struct PolygonalChain : public BasePolygonalChain
 {
 	Iterator begin() const &
 	{
-		if (points.begin() == points.end())
-			return {points.end(), points.end()};
+		if (vertices.begin() == vertices.end())
+			return {vertices.end(), vertices.end()};
 		else
-			return {points.begin(), std::next(points.begin())};
+			return {vertices.begin(), std::next(vertices.begin())};
 	}
 
 	std::optional<Vector3> find_first_intersection(const Polygon& polygon) const;
