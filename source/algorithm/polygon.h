@@ -60,4 +60,5 @@ struct PolygonalChain : public BasePolygonalChain
 	}
 
 	std::optional<Vector3> find_first_intersection(const Polygon& polygon) const;
+	void for_each_intersecting_segment(const Polygon& polygon, void(&f)(const LineSegment& segment)) const;
 };

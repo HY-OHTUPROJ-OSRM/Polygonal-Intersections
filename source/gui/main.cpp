@@ -42,15 +42,25 @@ int main()
 		Vector2 {-201,  -310},
 		Vector2 {-154,  -204},
 		Vector2 {-109,   -96},
-		Vector2 { -53,     3},
+		Vector2 { 153,   -70},
 		Vector2 {   5,   109},
-		
+		Vector2 { 256,    40},
+		Vector2 { 260,   160},
+		Vector2 { 185,   237},
+		Vector2 { 243,   328},
+		Vector2 { 358,   302},
+
 		// Polygon
-		Vector2 { 200,    0},
+		Vector2 { 200,  200},
 		Vector2 { 190,  150},
 		Vector2 {-100,  200},
 		Vector2 {-150,   50},
 		Vector2 {   0, -200},
+		Vector2 { 300, -200},
+		Vector2 { 400,    0},
+		Vector2 { 300,  150},
+		Vector2 { 200,  300},
+		Vector2 {  50,  250}
 	});
 
 	bool snappingEnabled = false;
@@ -85,14 +95,14 @@ int main()
 		DrawablePolygonalChain polygonalChain {
 			{250, 0, 30},
 			buttons |
-			std::views::take(5) |
+			std::views::take(10) |
 			std::views::transform(&DraggableButton::GetPos),
 		};
 
 		DrawablePolygon polygon {
 			{0, 255, 30},
 			buttons |
-			std::views::drop(5) |
+			std::views::drop(10) |
 			std::views::transform(&DraggableButton::GetPos),
 		};
 
@@ -151,6 +161,7 @@ int main()
 
 		if (auto first_intersection = polygonalChain.find_first_intersection(polygon))
 		{
+			/*
 			drawLabel(
 				window,
 				"First intersection",
@@ -159,6 +170,7 @@ int main()
 				sf::Vector2f{30, -30},
 				sf::Color::Yellow
 			);
+			*/
 
 			status = "At least one intersection exists";
 		}
@@ -172,6 +184,19 @@ int main()
 			button.UpdatePos(mouseScreenPos);
 			window.draw(button);
 		}
+
+		static sf::RenderWindow* window_ptr;
+		window_ptr = &window;
+
+		polygonalChain.for_each_intersecting_segment(polygon, *[](const LineSegment& segment)
+		{
+			const sf::Vertex line[] = {
+				{ToScreenCoordinates(segment.a), sf::Color::White},
+				{ToScreenCoordinates(segment.b), sf::Color::White}
+			};
+
+			window_ptr->draw(line, 2, sf::LineStrip);
+		});
 
 		window.display();
 	}

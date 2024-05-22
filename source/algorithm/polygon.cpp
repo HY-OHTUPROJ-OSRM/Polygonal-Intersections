@@ -65,3 +65,31 @@ std::optional<Vector3> PolygonalChain::find_first_intersection(const Polygon& po
 
 	return std::nullopt;
 }
+
+static bool intersection_exists(const LineSegment& segment, const Polygon& polygon)
+{
+	for (LineSegment edge : polygon)
+		if (find_intersection(edge, segment))
+			return true;
+
+	return false;
+}
+
+void PolygonalChain::for_each_intersecting_segment(const Polygon& polygon, void(&f)(const LineSegment& segment)) const
+{
+	if (vertices.empty()) return;
+
+	bool inside = polygon.contains(vertices.front());
+
+	for (LineSegment segment : *this)
+	{
+		if (intersection_exists(segment, polygon))
+		{
+			f(segment);
+
+			inside = polygon.contains(segment.b);
+		}
+		else if (inside)
+			f(segment);
+	}
+}
