@@ -49,6 +49,22 @@ struct Polygon : public BasePolygonalChain
 	bool contains(Vector2 point) const;
 };
 
+struct MultiPolygon
+{
+	std::vector<Polygon> polygons;
+
+	bool contains(Vector2 point) const
+	{
+		for (auto& polygon : polygons)
+			if (polygon.contains(point))
+				return true;
+
+		return false;
+	}
+};
+
+bool intersection_exists(const LineSegment& segment, const MultiPolygon& multipolygon);
+
 struct PolygonalChain : public BasePolygonalChain
 {
 	Iterator begin() const &
@@ -60,5 +76,26 @@ struct PolygonalChain : public BasePolygonalChain
 	}
 
 	std::optional<Vector3> find_first_intersection(const Polygon& polygon) const;
-	void for_each_intersecting_segment(const Polygon& polygon, void(&f)(const LineSegment& segment)) const;
+	
+	void for_each_intersecting_segment(const MultiPolygon& multipolygon, auto&& f) const
+	{
+		if (vertices.empty()) return;
+
+		bool inside = multipolygon.contains(vertices.front());
+
+		for (std::size_t segment_id = 0; segment_id + 1 < vertices.size(); ++segment_id)
+		{
+			const auto& a = vertices[segment_id];
+			const auto& b = vertices[segment_id + 1];
+
+			if (intersection_exists(LineSegment{a, b}, multipolygon))
+			{
+				f(segment_id);
+
+				inside = multipolygon.contains(b);
+			}
+			else if (inside)
+				f(segment_id);
+		}
+	}
 };

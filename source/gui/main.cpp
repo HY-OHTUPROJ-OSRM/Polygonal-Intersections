@@ -92,7 +92,7 @@ int main()
 			}
 		}
 
-		DrawablePolygonalChain polygonalChain {
+		DrawablePolygonalChain polychain {
 			{250, 0, 30},
 			buttons |
 			std::views::take(10) |
@@ -113,7 +113,7 @@ int main()
 			const int64_t mask = ~0x1fll;
 			auto snap = [](auto& p) { p.x &= mask; p.y &= mask; };
 			std::ranges::for_each(polygon.vertices, snap);
-			std::ranges::for_each(polygonalChain.vertices, snap);
+			std::ranges::for_each(polychain.vertices, snap);
 			snap(mousePos);
 		}
 
@@ -129,15 +129,15 @@ int main()
 		);
 
 		window.draw(polygon);
-		window.draw(polygonalChain);
+		window.draw(polychain);
 
-		if (!polygonalChain.vertices.empty())
+		if (!polychain.vertices.empty())
 		{
 			drawLabel(
 				window,
 				"Start",
 				main_font,
-				ToScreenCoordinates(polygonalChain.vertices.front()),
+				ToScreenCoordinates(polychain.vertices.front()),
 				sf::Vector2f{30, 30},
 				markerColor
 			);
@@ -146,20 +146,20 @@ int main()
 				window,
 				"End",
 				main_font,
-				ToScreenCoordinates(polygonalChain.vertices.back()),
+				ToScreenCoordinates(polychain.vertices.back()),
 				sf::Vector2f{30, 30},
 				markerColor
 			);
 		}
 
-		for (LineSegment ls1 : polygonalChain)
+		for (LineSegment ls1 : polychain)
 			for (LineSegment ls2 : polygon)
 				if (auto intersection = find_intersection(ls1, ls2))
 					window.draw(GetPointMarker(ls1.eval(*intersection), sf::Color::Yellow));
 
 		const char* status = "No intersections";
 
-		if (auto first_intersection = polygonalChain.find_first_intersection(polygon))
+		if (auto first_intersection = polychain.find_first_intersection(polygon))
 		{
 			/*
 			drawLabel(
@@ -185,17 +185,14 @@ int main()
 			window.draw(button);
 		}
 
-		static sf::RenderWindow* window_ptr;
-		window_ptr = &window;
-
-		polygonalChain.for_each_intersecting_segment(polygon, *[](const LineSegment& segment)
+		polychain.for_each_intersecting_segment(MultiPolygon{{polygon}}, [&](std::size_t segment_id)
 		{
 			const sf::Vertex line[] = {
-				{ToScreenCoordinates(segment.a), sf::Color::White},
-				{ToScreenCoordinates(segment.b), sf::Color::White}
+				{ToScreenCoordinates(polychain.vertices[segment_id]),     sf::Color::White},
+				{ToScreenCoordinates(polychain.vertices[segment_id + 1]), sf::Color::White}
 			};
 
-			window_ptr->draw(line, 2, sf::LineStrip);
+			window.draw(line, 2, sf::LineStrip);
 		});
 
 		window.display();

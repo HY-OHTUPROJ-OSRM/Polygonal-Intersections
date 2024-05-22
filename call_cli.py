@@ -8,33 +8,68 @@ def call_cli(integers):
 		stdout=subprocess.PIPE, 
 		stderr=subprocess.PIPE,
 	)
-	
-	# Pack the integers into binary format
+
 	input_data = struct.pack(f'{len(integers)}q', *integers)
-	
+
 	stdout, stderr = process.communicate(input=input_data)
-	
-	if process.returncode != 0:
-		print(f"Error: {stderr.decode('utf-8')}")
-	else:
-		print(f"Output: {stdout.decode('utf-8')}")
+
+	for x in struct.unpack(f'{len(stdout) // 8}q', stdout):
+		print(x)
 
 if __name__ == "__main__":
 	integers = [
-		1, # num polygons
-		1, # num polychains
+		2, # num polygons
+		2, # num polychains
 
 		# polygon 0
 		3,
 		 100,    0,
 		 -20,  100,
-		-200, -100,
+		0, 0,
+
+		# polygon 1
+		3,
+		-150, -100,
+		-150, -150,
+		 -50,  -50,
 		
 		# polychain 0
-		2,
-		0, -300,
+		8,
+		100, -100,
+		0, -100,
 		30, 30,
-		-200, 100
+		-50, 50,
+		-50, 0,
+		-100, -50,
+		-100, -100,
+		-100, -200,
+		1,
+		2,
+		3,
+		4,
+		5,
+		6,
+		7,
+		8,
+
+		# polychain 1
+		8,
+		100, -100,
+		0, -100,
+		30, 30,
+		-50, 50,
+		-50, 0,
+		-100, -50,
+		-100, -100,
+		-100, -200,
+		11,
+		12,
+		13,
+		14,
+		15,
+		16,
+		17,
+		18
 	]
 
 	call_cli(integers)
