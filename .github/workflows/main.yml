@@ -18,4 +18,4 @@ jobs:
         run: sudo apt-get install libboost-all-dev
 
       - name: Run tests
-        run: ./test.sh
+        run: chmod +x ./test.sh && ./test.sh
