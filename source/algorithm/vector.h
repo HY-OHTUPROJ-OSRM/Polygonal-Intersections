@@ -1,12 +1,23 @@
 #pragma once
 #include <cstdint>
 
-struct Vector2
+template<class T>
+struct Vector2_Impl
 {
-	int64_t x, y;
+	T x, y;
 
-	constexpr bool operator==(const Vector2&) const = default;
+	constexpr Vector2_Impl() = default;
+
+	constexpr Vector2_Impl(T x, T y) : x(x), y(y) {}
+
+	template<class U>
+	constexpr Vector2_Impl(Vector2_Impl<U> v) : x(v.x), y(v.y) {}
+
+	constexpr bool operator==(const Vector2_Impl&) const = default;
 };
+
+using Vector2    = Vector2_Impl<int64_t>;
+using Vector2_32 = Vector2_Impl<int32_t>;
 
 struct Vector3
 {

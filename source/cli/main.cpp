@@ -22,8 +22,8 @@ uint64_t read_vertices(BasePolygonalChain& poly_chain)
 
 	for (uint64_t i = 0; i < num_vertices; ++i)
 	{
-		const auto x = read<int64_t>();
-		const auto y = read<int64_t>();
+		const auto x = read<int32_t>();
+		const auto y = read<int32_t>();
 
 		poly_chain.vertices.emplace_back(x, y);
 	}
