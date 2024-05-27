@@ -66,9 +66,18 @@ std::optional<Vector3> PolygonalChain::find_first_intersection(const Polygon& po
 	return std::nullopt;
 }
 
-bool intersection_exists(const LineSegment& segment, const MultiPolygon& multipolygon)
+bool MultiPolygon::contains(Vector2 point) const
 {
-	for (auto& polygon : multipolygon.polygons)
+	for (auto& polygon : polygons)
+		if (polygon.contains(point))
+			return true;
+
+	return false;
+}
+
+bool MultiPolygon::edge_intersects(const LineSegment& segment) const
+{
+	for (auto& polygon : polygons)
 		for (LineSegment edge : polygon)
 			if (find_intersection(edge, segment))
 				return true;

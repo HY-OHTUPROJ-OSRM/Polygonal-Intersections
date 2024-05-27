@@ -53,17 +53,9 @@ struct MultiPolygon
 {
 	std::vector<Polygon> polygons;
 
-	bool contains(Vector2 point) const
-	{
-		for (auto& polygon : polygons)
-			if (polygon.contains(point))
-				return true;
-
-		return false;
-	}
+	bool contains(Vector2 point) const;
+	bool edge_intersects(const LineSegment& segment) const;
 };
-
-bool intersection_exists(const LineSegment& segment, const MultiPolygon& multipolygon);
 
 struct PolygonalChain : public BasePolygonalChain
 {
@@ -88,7 +80,7 @@ struct PolygonalChain : public BasePolygonalChain
 			const auto& a = vertices[segment_id];
 			const auto& b = vertices[segment_id + 1];
 
-			if (intersection_exists(LineSegment{a, b}, multipolygon))
+			if (multipolygon.edge_intersects({a, b}))
 			{
 				f(segment_id);
 
