@@ -38,19 +38,32 @@ struct Rational
 			return this->nom * other.den > this->den * other.nom;
 	}
 
-	constexpr bool operator>(Rational other) const
+	constexpr bool operator>(auto other) const
 	{
 		return other < *this;
 	}
 
-	constexpr bool operator<=(Rational other) const
+	constexpr bool operator<=(auto other) const
 	{
 		return !(other < *this);
 	}
 
-	constexpr bool operator>=(Rational other) const
+	constexpr bool operator>=(auto other) const
 	{
 		return !(*this < other);
+	}
+
+	constexpr bool is_negative() const
+	{
+		return (nom < 0 && den > 0) || (nom > 0 && den < 0);
+	}
+
+	constexpr bool is_above_1() const
+	{
+		if (den > 0)
+			return nom > den;
+		else
+			return nom < den;
 	}
 
 	template<class T>

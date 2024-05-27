@@ -39,10 +39,10 @@ std::optional<Rational> find_intersection(const LineSegment& ls1, const LineSegm
 	const Rational t1 = {dir2.y * offset.x - dir2.x * offset.y, det};
 	const Rational t2 = {dir1.y * offset.x - dir1.x * offset.y, det};
 
-	if (t1.nom * det < 0 ||
-		t2.nom * det < 0 ||
-		t1.nom * det > det * det ||
-		t2.nom * det > det * det
+	if (t1.is_negative() ||
+		t2.is_negative() ||
+		t1.is_above_1() ||
+		t2.is_above_1()
 	)
 		return std::nullopt;
 
