@@ -22,8 +22,8 @@ uint64_t read_vertices(BasePolygonalChain& poly_chain)
 
 	for (uint64_t i = 0; i < num_vertices; ++i)
 	{
-		const auto x = read<int64_t>();
-		const auto y = read<int64_t>();
+		const auto x = read<int32_t>();
+		const auto y = read<int32_t>();
 
 		poly_chain.vertices.emplace_back(x, y);
 	}
@@ -38,7 +38,7 @@ struct NodeAwarePolygonalChain : public PolygonalChain
 	void read_node_ids(uint64_t n)
 	{
 		for (uint64_t i = 0; i < n; ++i)
-			node_ids.push_back(read<int64_t>());
+			node_ids.push_back(read<uint64_t>());
 	}
 };
 
@@ -49,7 +49,6 @@ int main()
 
 	MultiPolygon multipolygon;
 	std::vector<NodeAwarePolygonalChain> polychains;
-	std::vector<uint64_t> node_ids;
 
 	multipolygon.polygons.reserve(num_polygons);
 	polychains.reserve(num_polychains);

@@ -7,7 +7,7 @@
 
 struct BasePolygonalChain
 {
-	std::vector<Vector2> vertices;
+	std::vector<Vector2_32> vertices;
 
 	BasePolygonalChain() = default;
 
@@ -17,7 +17,7 @@ struct BasePolygonalChain
 	template<class Range>
 	BasePolygonalChain(Range&& range) : vertices(std::begin(range), std::end(range)) {}
 
-	BasePolygonalChain(std::vector<Vector2>&& vertices) : vertices(std::move(vertices)) {}
+	BasePolygonalChain(std::vector<Vector2_32>&& vertices) : vertices(std::move(vertices)) {}
 
 	struct Iterator
 	{
