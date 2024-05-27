@@ -1,43 +1,37 @@
 #include "polygon.h"
 #include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_CASE( vectorOutsideArea )
-{
+
+struct inits {
     Polygon testpoly;
-    testpoly.vertices = std::vector{
+    void init_poly()
+    {
+        testpoly.vertices = std::vector{
         Vector2{10,10},
         Vector2{20,10},
         Vector2{20,20},
         Vector2{10,20}
-    };
+        };
+    }
+    inits() : testpoly() {init_poly();}
+};
+
+BOOST_FIXTURE_TEST_SUITE( Contains, inits )
+BOOST_AUTO_TEST_CASE( vector2OutsideArea )
+{
     Vector2 testvector= {2,2};
     BOOST_TEST(!testpoly.contains(testvector));
 }
 
-BOOST_AUTO_TEST_CASE( vectorInsideArea )
+BOOST_AUTO_TEST_CASE( vector2InsideArea )
 {
-    Polygon testpoly;
-    testpoly.vertices = std::vector{
-        Vector2{10,10},
-        Vector2{20,10},
-        Vector2{20,20},
-        Vector2{10,20}
-    };
     Vector2 testvector= {12,15};
     BOOST_TEST(testpoly.contains(testvector));
 }
 
-BOOST_AUTO_TEST_CASE( vectorAlongsideBorder )
+BOOST_AUTO_TEST_CASE( vector2AlongsideBorder )
 {
-    Polygon testpoly;
-    testpoly.vertices = std::vector{
-        Vector2{10,10},
-        Vector2{20,10},
-        Vector2{20,20},
-        Vector2{10,20}
-    };
     Vector2 testvector= {12,10};
     BOOST_TEST(testpoly.contains(testvector));
 }
-
-
+BOOST_AUTO_TEST_SUITE_END()
