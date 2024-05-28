@@ -67,16 +67,17 @@ tests: $(TEST_OUTPUT)
 run_tests: tests
 	./bin/tests/test
 
-cov: coverage
-
-coverage: run_tests
+$(TRACEFILE): run_tests
 	lcov --capture --directory $(TEST_BUILD) --output-file $(TRACEFILE)
 
-	lcov --remove $(TRACEFILE) '$(shell pwd)/tests/*' \
+	lcov --remove $@ '$(shell pwd)/tests/*' \
 		'/usr/include/boost/*' '/usr/local/include/boost/*' \
-		'/usr/include/*' --output-file $(TRACEFILE)
+		'/usr/include/*' --output-file $@
 
+coverage: $(TRACEFILE)
 	genhtml $(TRACEFILE) --output-directory $(HMTL_COV)
+
+cov: coverage
 
 clean:
 	@echo clean...
