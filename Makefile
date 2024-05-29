@@ -32,7 +32,7 @@ CXX := g++
 
 COMMON_CXXFLAGS := $(INCLUDE) -std=c++20 -Wall -Wextra -Wno-switch
 CXXFLAGS := $(COMMON_CXXFLAGS) -O3
-TEST_CXXFLAGS := $(COMMON_CXXFLAGS) --coverage -O3
+TEST_CXXFLAGS := $(COMMON_CXXFLAGS) --coverage
 
 GUI_LDFLAGS := bin/gui/sfml-graphics-2.dll \
                bin/gui/sfml-window-2.dll \
