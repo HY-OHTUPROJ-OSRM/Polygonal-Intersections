@@ -38,4 +38,12 @@ BOOST_AUTO_TEST_CASE( vector2AlongsideBorder )
 	BOOST_TEST(testpoly.contains(testvector));
 }
 
+BOOST_AUTO_TEST_CASE( polygonEmptyTest )
+{
+	Polygon emptyp;
+	emptyp.vertices = {};
+	Vector2 testvector = {0, 0};
+	BOOST_TEST(!(emptyp.contains(testvector)));
+}
+
 BOOST_AUTO_TEST_SUITE_END()

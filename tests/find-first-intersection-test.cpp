@@ -77,4 +77,12 @@ BOOST_AUTO_TEST_CASE( segmentCrossesManyTimes )
 	else
 		{BOOST_FAIL("");}
 }
+
+BOOST_AUTO_TEST_CASE( emptySegmentTest )
+{
+	testchain.vertices = {};
+	if(testchain.find_first_intersection(testpoly).has_value())
+		{BOOST_FAIL("");}		
+}
+
 BOOST_AUTO_TEST_SUITE_END()

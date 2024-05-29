@@ -58,4 +58,14 @@ BOOST_AUTO_TEST_CASE( findIntersectionParallelColNoProjNoOverlap )
 		{BOOST_FAIL("");}
 }
 
+BOOST_AUTO_TEST_CASE( findIntersectionParallelColNoProjOverlapB )
+{
+	LineSegment testsegment2= {Vector2{9,10},Vector2{2,3}};
+	if(find_intersection(testsegment,testsegment2).has_value()){
+		BOOST_TEST(find_intersection(testsegment,testsegment2).value().nom == 4);
+		BOOST_TEST(find_intersection(testsegment,testsegment2).value().den == 8);
+	} else
+		{BOOST_FAIL("");}	
+}
+
 BOOST_AUTO_TEST_SUITE_END()

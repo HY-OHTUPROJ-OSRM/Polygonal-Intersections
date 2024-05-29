@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE( multipolyEdgeDoesntIntersect )
 	BOOST_TEST(!(multipoly.edge_intersects(testsegment)));
 }
 
-BOOST_AUTO_TEST_CASE( multipolyCountIntersectingSegmentsMany )
+BOOST_AUTO_TEST_CASE( multipolyCountIntersectingSegmentsCrossing )
 {
 	Polygon testpoly2;
 	testpoly2.vertices = {
@@ -129,6 +129,33 @@ BOOST_AUTO_TEST_CASE( multipolyCountIntersectingSegmentsNone )
 		a++;
 	});
 	BOOST_TEST(a==0);
+}
+
+BOOST_AUTO_TEST_CASE( multipolyCountIntersectingSegmentsInside )
+{
+	Polygon testpoly2;
+	testpoly2.vertices = {
+		Vector2_32{30, 30},
+		Vector2_32{40, 30},
+		Vector2_32{40, 40},
+		Vector2_32{30, 40}
+	};
+	MultiPolygon multipoly;
+	multipoly.polygons = {testpoly1, testpoly2};
+	PolygonalChain testchain;
+	testchain.vertices = {
+		Vector2_32{10, 15},
+		Vector2_32{15, 15},
+		Vector2_32{14, 16},
+		Vector2_32{15, 18},
+		Vector2_32{14, 19}
+	};
+	int a = 0;
+	testchain.for_each_intersecting_segment(multipoly,[&](auto var){
+		(void) var;
+		a++;
+	});
+	BOOST_TEST(a==4);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
