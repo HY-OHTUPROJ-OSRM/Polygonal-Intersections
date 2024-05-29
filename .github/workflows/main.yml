@@ -20,13 +20,13 @@ jobs:
       - name: Run tests
         run: make run_tests
 
-      - name: Install LCOV
-        run: sudo apt install -y lcov
+      - name: Install gcovr
+        run: sudo apt install -y gcovr
 
       - name: Generate coverage report
-        run: make coverage.info
+        run: make coverage_xml
 
       - name: Upload coverage to Codecov
-        run: bash <(curl -s https://codecov.io/bash) -f coverage.info
+        run: bash <(curl -s https://codecov.io/bash) -f coverage/coverage.xml
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

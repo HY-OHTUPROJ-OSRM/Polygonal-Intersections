@@ -12,8 +12,7 @@ GUI_OUTPUT  := bin/gui/Polygonal-Intersections-GUI
 CLI_OUTPUT  := bin/cli/Polygonal-Intersections-CLI
 TEST_OUTPUT := bin/tests/test
 
-HMTL_COV := htmlcov
-TRACEFILE := coverage.info
+COVERAGE := coverage
 
 INCLUDES := $(ALG_SOURCE)
 
@@ -33,7 +32,7 @@ CXX := g++
 
 COMMON_CXXFLAGS := $(INCLUDE) -std=c++20 -Wall -Wextra -Wno-switch
 CXXFLAGS := $(COMMON_CXXFLAGS) -O3
-TEST_CXXFLAGS := $(COMMON_CXXFLAGS) --coverage
+TEST_CXXFLAGS := $(COMMON_CXXFLAGS) --coverage -O3
 
 GUI_LDFLAGS := bin/gui/sfml-graphics-2.dll \
                bin/gui/sfml-window-2.dll \
@@ -43,8 +42,8 @@ GUI_LDFLAGS := bin/gui/sfml-graphics-2.dll \
 CLI_LDFLAGS := -static-libgcc -static-libstdc++
 TEST_LDFLAGS := --coverage
 
-.PHONY: gui cli tests run_tests cov coverage clean \
-	gui_dirs cli_dirs alg_dirs test_dirs
+.PHONY: gui cli tests run_tests cov coverage_xml \
+	clean gui_dirs cli_dirs alg_dirs test_dirs
 
 all: gui cli
 
@@ -67,21 +66,19 @@ tests: $(TEST_OUTPUT)
 run_tests: tests
 	./bin/tests/test
 
-$(TRACEFILE): run_tests
-	lcov --capture --directory $(TEST_BUILD) --output-file $(TRACEFILE)
+coverage_xml: run_tests
+	@mkdir -p $(COVERAGE)
+	gcovr --xml $(COVERAGE)/coverage.xml -e tests
 
-	lcov --remove $@ '$(shell pwd)/tests/*' \
-		'/usr/include/boost/*' '/usr/local/include/boost/*' \
-		'/usr/include/*' --output-file $@
-
-coverage: $(TRACEFILE)
-	genhtml $(TRACEFILE) --output-directory $(HMTL_COV)
+coverage: run_tests
+	@mkdir -p $(COVERAGE)
+	gcovr --html-details $(COVERAGE)/coverage.html -e tests
 
 cov: coverage
 
 clean:
 	@echo clean...
-	@rm -fr build $(GUI_OUTPUT) $(CLI_OUTPUT) $(TEST_OUTPUT) $(HMTL_COV) $(TRACEFILE)
+	@rm -fr build $(GUI_OUTPUT) $(CLI_OUTPUT) $(TEST_OUTPUT) $(HMTL_COV) $(COVERAGE)
 
 $(GUI_OUTPUT): $(ALG_OFILES) $(GUI_OFILES)
 	@echo $(notdir $(GUI_OUTPUT))
