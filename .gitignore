@@ -1,4 +1,5 @@
 coverage.info
 htmlcov
+gcovr
 build
 bin

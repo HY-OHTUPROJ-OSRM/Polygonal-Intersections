@@ -13,6 +13,7 @@ CLI_OUTPUT  := bin/cli/Polygonal-Intersections-CLI
 TEST_OUTPUT := bin/tests/test
 
 HMTL_COV := htmlcov
+GCOVR_COV := gcovr
 TRACEFILE := coverage.info
 
 INCLUDES := $(ALG_SOURCE)
@@ -43,8 +44,8 @@ GUI_LDFLAGS := bin/gui/sfml-graphics-2.dll \
 CLI_LDFLAGS := -static-libgcc -static-libstdc++
 TEST_LDFLAGS := --coverage
 
-.PHONY: gui cli tests run_tests cov coverage clean \
-	gui_dirs cli_dirs alg_dirs test_dirs
+.PHONY: gui cli tests run_tests cov coverage gcovr \
+	clean gui_dirs cli_dirs alg_dirs test_dirs
 
 all: gui cli
 
@@ -79,9 +80,14 @@ coverage: $(TRACEFILE)
 
 cov: coverage
 
+gcovr: run_tests
+	@mkdir -p $(GCOVR_COV)
+	gcovr --html-details $(GCOVR_COV)/coverage.html -e tests
+
 clean:
 	@echo clean...
-	@rm -fr build $(GUI_OUTPUT) $(CLI_OUTPUT) $(TEST_OUTPUT) $(HMTL_COV) $(TRACEFILE)
+	@rm -fr build $(GUI_OUTPUT) $(CLI_OUTPUT) $(TEST_OUTPUT) \
+		$(HMTL_COV) $(TRACEFILE) $(GCOVR_COV)
 
 $(GUI_OUTPUT): $(ALG_OFILES) $(GUI_OFILES)
 	@echo $(notdir $(GUI_OUTPUT))
