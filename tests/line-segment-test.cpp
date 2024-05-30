@@ -68,4 +68,13 @@ BOOST_AUTO_TEST_CASE( findIntersectionParallelColNoProjOverlapB )
 		{BOOST_FAIL("");}	
 }
 
+BOOST_AUTO_TEST_CASE( segmentProjectionDotSegment )
+{
+	LineSegment dots = {Vector2{1,2},Vector2{1,2}};
+	Vector2 vect = {1,2};
+	Vector2 vect2 = {2,4};
+	BOOST_TEST(dots.contains_projection(vect) == true);
+	BOOST_TEST(dots.contains_projection(vect2) == false);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
