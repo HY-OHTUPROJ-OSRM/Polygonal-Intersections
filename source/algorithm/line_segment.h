@@ -1,7 +1,7 @@
 #pragma once
 #include "vector.h"
 #include "rational.h"
-#include <optional>
+#include <variant>
 
 struct LineSegment
 {
@@ -30,6 +30,13 @@ struct LineSegment
 
 		return Dot(point - a, diff) >= 0 && Dot(point - b, diff) <= 0;
 	}
+
+	constexpr bool contains(Vector2 point) const
+	{
+		return contains_projection(point) && Det(point - a, b - a) == 0;
+	}
 };
 
-std::optional<Rational> find_intersection(const LineSegment& ls1, const LineSegment& ls2);
+// Finds the intersection in terms of parameters to ls1
+std::variant<std::monostate, Rational, RationalInterval>
+find_intersection(const LineSegment& ls1, const LineSegment& ls2);

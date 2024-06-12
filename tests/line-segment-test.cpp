@@ -26,46 +26,45 @@ BOOST_AUTO_TEST_CASE( segmentProjection )
 BOOST_AUTO_TEST_CASE( findIntersectionParallel )
 {
 	LineSegment testsegment2= {Vector2{2,4},Vector2{4,6}};
-	if(find_intersection(testsegment,testsegment2).has_value())
-		{BOOST_FAIL("");}
+
+	if (find_intersection(testsegment,testsegment2).index())
+		BOOST_FAIL("");
 }
 
 BOOST_AUTO_TEST_CASE( findIntersectionParallelCollinearProjection )
 {
 	LineSegment testsegment2= {Vector2{0,1},Vector2{5,6}};
-	if(find_intersection(testsegment,testsegment2).has_value()){
-		BOOST_TEST(find_intersection(testsegment,testsegment2).value().nom == 0);
-		BOOST_TEST(find_intersection(testsegment,testsegment2).value().den == 1);
-	} else
-		{BOOST_FAIL("");}
+
+	auto intersection = find_intersection(testsegment,testsegment2);
+
+	BOOST_TEST(std::holds_alternative<RationalInterval>(intersection));
 }
 
 BOOST_AUTO_TEST_CASE( findIntersectionParallelColNoProjOverlap )
 {
 	LineSegment testsegment2= {Vector2{2,3},Vector2{9,10}};
-	if(find_intersection(testsegment,testsegment2).has_value()){
-		BOOST_TEST(find_intersection(testsegment,testsegment2).value().nom == 4);
-		BOOST_TEST(find_intersection(testsegment,testsegment2).value().den == 8);
-	} else
-		{BOOST_FAIL("");}
+
+	auto intersection = find_intersection(testsegment,testsegment2);
+
+	BOOST_TEST(std::holds_alternative<RationalInterval>(intersection));
 	
 }
 
 BOOST_AUTO_TEST_CASE( findIntersectionParallelColNoProjNoOverlap )
 {
 	LineSegment testsegment2= {Vector2{4,5},Vector2{9,10}};
-	if(find_intersection(testsegment,testsegment2).has_value())
-		{BOOST_FAIL("");}
+
+	if (find_intersection(testsegment,testsegment2).index())
+		BOOST_FAIL("");
 }
 
 BOOST_AUTO_TEST_CASE( findIntersectionParallelColNoProjOverlapB )
 {
 	LineSegment testsegment2= {Vector2{9,10},Vector2{2,3}};
-	if(find_intersection(testsegment,testsegment2).has_value()){
-		BOOST_TEST(find_intersection(testsegment,testsegment2).value().nom == 4);
-		BOOST_TEST(find_intersection(testsegment,testsegment2).value().den == 8);
-	} else
-		{BOOST_FAIL("");}	
+
+	auto intersection = find_intersection(testsegment,testsegment2);
+
+	BOOST_TEST(std::holds_alternative<RationalInterval>(intersection));
 }
 
 BOOST_AUTO_TEST_CASE( segmentProjectionDotSegment )

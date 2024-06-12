@@ -53,9 +53,19 @@ struct Rational
 		return !(*this < other);
 	}
 
+	constexpr bool is_positive() const
+	{
+		return (nom > 0 && den > 0) || (nom < 0 && den < 0);
+	}
+
 	constexpr bool is_negative() const
 	{
 		return (nom < 0 && den > 0) || (nom > 0 && den < 0);
+	}
+
+	constexpr bool is_zero() const
+	{
+		return nom == 0;
 	}
 
 	constexpr bool is_above_1() const
@@ -71,4 +81,15 @@ struct Rational
 	{
 		return static_cast<T>(nom) / den;
 	}
+};
+
+struct RationalInterval
+{
+	Rational start, end;
+
+	constexpr RationalInterval(int64_t start_nom, int64_t end_nom, int64_t den):
+		start(start_nom, den), end(end_nom, den) {}
+
+	constexpr RationalInterval(Rational start, Rational end):
+		start(start), end(end) {}
 };

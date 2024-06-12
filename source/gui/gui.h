@@ -49,8 +49,8 @@ inline sf::Vector2f ToScreenCoordinates(Vector2 v)
 inline sf::Vector2f ToScreenCoordinates(Vector3 v)
 {
 	return {
-		screenMidX + static_cast<float>(v.x) / v.z,
-		screenMidY - static_cast<float>(v.y) / v.z
+		static_cast<float>(screenMidX * v.z + v.x) / v.z,
+		static_cast<float>(screenMidY * v.z - v.y) / v.z
 	};
 }
 

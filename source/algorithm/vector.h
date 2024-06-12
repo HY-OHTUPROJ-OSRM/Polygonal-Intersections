@@ -50,3 +50,8 @@ constexpr int64_t Dot(Vector2 a, Vector2 b)
 {
 	return a.x * b.x + a.y * b.y;
 }
+
+constexpr int64_t Det(Vector2 a, Vector2 b)
+{
+	return a.x * b.y - a.y * b.x;
+}

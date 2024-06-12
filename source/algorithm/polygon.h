@@ -47,6 +47,10 @@ struct Polygon : public BasePolygonalChain
 	}
 
 	bool contains(Vector2 point) const;
+
+	// Returns true iff every neighborhood of the point contains
+	// a point inside the polygon in the given direction
+	bool limit_of_contains(Vector2 point, Vector2 dir) const;
 };
 
 struct MultiPolygon
@@ -66,8 +70,6 @@ struct PolygonalChain : public BasePolygonalChain
 		else
 			return {vertices.begin(), std::next(vertices.begin())};
 	}
-
-	std::optional<Vector3> find_first_intersection(const Polygon& polygon) const;
 	
 	void for_each_intersecting_segment(const MultiPolygon& multipolygon, auto&& f) const
 	{

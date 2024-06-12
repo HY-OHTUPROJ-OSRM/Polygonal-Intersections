@@ -31,9 +31,9 @@ bool Polygon::contains(Vector2 point) const
 		const Vector2 u = edge.b - edge.a;
 		const Vector2 v = point - edge.a;
 
-		const int64_t det = u.x * v.y - u.y * v.x;
+		const int64_t det = Det(u, v);
 
-		if (det > 0) continue; // if the edge is above the point
+		if (det > 0) continue; // if the point is above the edge
 		if (det == 0) return true; // if the point is on the edge
 
 		parity ^= 1; // otherwise the edge is below the point
@@ -42,28 +42,43 @@ bool Polygon::contains(Vector2 point) const
 	return parity;
 }
 
-std::optional<Vector3> PolygonalChain::find_first_intersection(const Polygon& polygon) const
+bool Polygon::limit_of_contains(Vector2 point, Vector2 dir) const
 {
-	if (!vertices.empty() && polygon.contains(vertices.front()))
-		return {{vertices.front().x, vertices.front().y, 1}};
+	int parity = 0;
 
-	for (LineSegment ls1 : *this)
+	for (LineSegment edge : *this)
 	{
-		std::optional<Rational> first_intersection;
-
-		for (LineSegment ls2 : polygon)
+		// If the edge is parallel to dir
+		if (Det(edge.b - edge.a, dir) == 0)
 		{
-			const auto intersection = find_intersection(ls1, ls2);
+			if (!edge.contains(point))
+				continue;
 
-			if (intersection && (!first_intersection || *intersection < *first_intersection))
-				first_intersection = intersection;
+			if (point == edge.a && Dot(dir, edge.a - edge.b) > 0)
+				continue;
+
+			if (point == edge.b && Dot(dir, edge.b - edge.a) > 0)
+				continue;
+
+			return true;
 		}
 
-		if (first_intersection)
-			return {ls1.eval(*first_intersection)};
+		if (Det(edge.a - point, dir) >= 0 && Det(edge.b - point, dir) >= 0)
+			continue;
+
+		const auto edge_dir = edge.b - edge.a;
+
+		const auto det = Det(edge_dir, dir);
+		const auto offset = point - edge.a;
+
+		const Rational t1 = {Det(offset,      dir), det};
+		const Rational t2 = {Det(offset, edge_dir), det};
+
+		if (!t1.is_negative() && !t1.is_above_1() && t2.is_positive())
+			parity ^= 1;
 	}
 
-	return std::nullopt;
+	return parity;
 }
 
 bool MultiPolygon::contains(Vector2 point) const
@@ -79,7 +94,7 @@ bool MultiPolygon::edge_intersects(const LineSegment& segment) const
 {
 	for (auto& polygon : polygons)
 		for (LineSegment edge : polygon)
-			if (find_intersection(edge, segment))
+			if (find_intersection(edge, segment).index())
 				return true;
 
 	return false;
