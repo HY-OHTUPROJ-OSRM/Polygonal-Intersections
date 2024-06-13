@@ -1,7 +1,11 @@
 #pragma once
 #include "vector.h"
 #include "rational.h"
+#include <cmath>
+#include <vector>
 #include <variant>
+
+struct SpeedZone;
 
 struct LineSegment
 {
@@ -35,6 +39,10 @@ struct LineSegment
 	{
 		return contains_projection(point) && Det(point - a, b - a) == 0;
 	}
+
+	double length() const { return std::hypot(b.x - a.x, b.y - a.y); }
+
+	double new_average_speed(double original_speed, const std::vector<SpeedZone>& speed_zones) const;
 };
 
 // Finds the intersection in terms of parameters to ls1
