@@ -1,75 +1,27 @@
-#include <iostream>
-#include <vector>
-#include "polygon.h"
+#include "traffic.h"
+#include "io.h"
 #include <cstdint>
-
-template<class T>
-T read()
-{
-	T res;
-	std::cin.read(reinterpret_cast<char*>(&res), sizeof(res));
-	return res;
-}
-
-void write(auto val)
-{
-	std::cout.write(reinterpret_cast<char*>(&val), sizeof(val));
-}
-
-uint64_t read_vertices(BasePolygonalChain& poly_chain)
-{
-	const uint64_t num_vertices = read<uint64_t>();
-
-	for (uint64_t i = 0; i < num_vertices; ++i)
-	{
-		const auto x = read<int32_t>();
-		const auto y = read<int32_t>();
-
-		poly_chain.vertices.emplace_back(x, y);
-	}
-
-	return num_vertices;
-}
-
-struct NodeAwarePolygonalChain : public PolygonalChain
-{
-	std::vector<uint64_t> node_ids;
-
-	void read_node_ids(uint64_t n)
-	{
-		for (uint64_t i = 0; i < n; ++i)
-			node_ids.push_back(read<uint64_t>());
-	}
-};
 
 int main()
 {
-	const uint64_t num_polygons   = read<uint64_t>();
-	const uint64_t num_polychains = read<uint64_t>();
+	const uint64_t num_polygon_roadblocks = read<uint64_t>();
+	const uint64_t num_chain_roadblocks   = read<uint64_t>();
+	const uint64_t num_speed_zones        = read<uint64_t>();
+	const uint64_t num_paths              = read<uint64_t>();
 
-	MultiPolygon multipolygon;
-	std::vector<NodeAwarePolygonalChain> polychains;
+	if (num_paths == 0) return 0;
 
-	multipolygon.polygons.reserve(num_polygons);
-	polychains.reserve(num_polychains);
+	TrafficZones traffic_zones = read_traffic_zones(
+		num_polygon_roadblocks,
+		num_chain_roadblocks,
+		num_speed_zones
+	);
 
-	for (uint64_t i = 0; i < num_polygons; ++i)
-		read_vertices(multipolygon.polygons.emplace_back());
-
-	for (uint64_t i = 0; i < num_polychains; ++i)
+	for (uint64_t i = 0; i < num_paths; ++i)
 	{
-		auto& polychain = polychains.emplace_back();
+		double og_speed    = read<uint16_t>();
+		uint64_t num_nodes = read<uint64_t>();
 
-		const auto num_vertices = read_vertices(polychain);
-		polychain.read_node_ids(num_vertices);
-	}
-
-	for (const auto& polychain : polychains)
-	{
-		polychain.for_each_intersecting_segment(multipolygon, [&](std::size_t segment_id)
-		{
-			write(polychain.node_ids[segment_id]);
-			write(polychain.node_ids[segment_id + 1]);
-		});
+		traffic_zones.for_each_affected_segment(og_speed, PathNodeReader(num_nodes), write_segment);
 	}
 }

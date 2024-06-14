@@ -83,19 +83,9 @@ bool Polygon::limit_of_contains(Vector2 point, Vector2 dir) const
 
 bool MultiPolygon::contains(Vector2 point) const
 {
-	for (auto& polygon : polygons)
+	for (auto& polygon : components)
 		if (polygon.contains(point))
 			return true;
-
-	return false;
-}
-
-bool MultiPolygon::edge_intersects(const LineSegment& segment) const
-{
-	for (auto& polygon : polygons)
-		for (LineSegment edge : polygon)
-			if (find_intersection(edge, segment).index())
-				return true;
 
 	return false;
 }
