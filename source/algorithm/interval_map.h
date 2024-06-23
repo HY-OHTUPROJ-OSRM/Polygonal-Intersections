@@ -14,6 +14,8 @@ struct IntervalMap
 
 		constexpr Value(Rational start, Rational end, Mapped mapped):
 			RationalInterval(start, end), mapped(mapped) {}
+
+		constexpr bool operator==(const Value&) const = default;
 	};
 
 	std::map<Rational, Mapped> start_points;

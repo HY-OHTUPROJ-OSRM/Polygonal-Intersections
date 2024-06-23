@@ -17,6 +17,8 @@ static IntervalMap::Mapped value_before(T& start_points, typename T::const_itera
 
 void IntervalMap::insert(Rational start, Rational end, Mapped value)
 {
+	if (start >= end) return;
+
 	auto overlap_begin = start_points.lower_bound(start);
 	auto overlap_end   = start_points.upper_bound(end);
 
