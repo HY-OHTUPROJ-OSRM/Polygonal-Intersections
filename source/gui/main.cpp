@@ -5,7 +5,12 @@
 #include <ranges>
 #include <algorithm>
 #include <SFML/Graphics.hpp>
+#include "polygon.h"
+#include "interval_map.h"
+
+namespace Windows {
 #include <windows.h>
+}
 
 using std::cout;
 
@@ -31,7 +36,7 @@ int main()
 	window.setKeyRepeatEnabled(false);
 
 	char windows_dir[MAX_PATH];
-	GetWindowsDirectory(windows_dir, MAX_PATH);
+	Windows::GetWindowsDirectory(windows_dir, MAX_PATH);
 
 	sf::Font main_font;
 	main_font.loadFromFile(std::string(windows_dir) + std::string("\\Fonts\\seguisb.ttf"));
@@ -153,31 +158,17 @@ int main()
 		}
 
 		for (LineSegment ls1 : polychain)
-			for (LineSegment ls2 : polygon)
-				if (auto intersection = find_intersection(ls1, ls2))
-					window.draw(GetPointMarker(ls1.eval(*intersection), sf::Color::Yellow));
-
-		const char* status = "No intersections";
-
-		if (auto first_intersection = polychain.find_first_intersection(polygon))
 		{
-			/*
-			drawLabel(
-				window,
-				"First intersection",
-				main_font,
-				ToScreenCoordinates(*first_intersection),
-				sf::Vector2f{30, -30},
-				sf::Color::Yellow
-			);
-			*/
+			for (LineSegment ls2 : polygon)
+			{
+				std::visit([&]<class T>(T&& x)
+				{
+					if constexpr (std::same_as<T, Rational>)
+						window.draw(GetPointMarker(ls1.eval(x), sf::Color::Yellow));
 
-			status = "At least one intersection exists";
+				}, find_intersection(ls1, ls2));
+			}
 		}
-
-		sf::Text statusText(status, main_font);
-		statusText.setPosition(30, 30);
-		window.draw(statusText);
 
 		for (auto& button : buttons)
 		{
@@ -185,6 +176,26 @@ int main()
 			window.draw(button);
 		}
 
+		for (LineSegment segment : polychain)
+		{
+			IntervalMap intervals;
+			intervals.insert_at_intersections(segment, polygon, 1);
+
+			for (const auto& part : intervals)
+			{
+				if (part.mapped == 0) continue;
+
+				sf::Vertex arr[]
+				{
+					{ToScreenCoordinates(segment.eval(part.start)), sf::Color::Blue},
+					{ToScreenCoordinates(segment.eval(part.end)),   sf::Color::Blue}
+				};
+
+				window.draw(arr, 2, sf::LineStrip);
+			}
+		}
+
+		/*
 		polychain.for_each_intersecting_segment(MultiPolygon{{polygon}}, [&](std::size_t segment_id)
 		{
 			const sf::Vertex line[] = {
@@ -194,6 +205,7 @@ int main()
 
 			window.draw(line, 2, sf::LineStrip);
 		});
+		*/
 
 		window.display();
 	}

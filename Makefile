@@ -32,7 +32,7 @@ INCLUDE := $(foreach dir,$(INCLUDES),-I$(dir))
 
 CXX := g++
 
-COMMON_CXXFLAGS := $(INCLUDE) -std=c++20 -Wall -Wextra -Wno-switch
+COMMON_CXXFLAGS := $(INCLUDE) -std=c++23 -Wall -Wextra -Wno-switch
 CXXFLAGS := $(COMMON_CXXFLAGS) -O3
 TEST_CXXFLAGS := $(COMMON_CXXFLAGS) --coverage
 

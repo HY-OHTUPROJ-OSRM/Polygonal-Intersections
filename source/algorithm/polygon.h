@@ -2,6 +2,7 @@
 #include "line_segment.h"
 #include "vector.h"
 #include "rational.h"
+#include <concepts>
 #include <utility>
 #include <vector>
 
@@ -36,7 +37,7 @@ struct BasePolygonalChain
 	Iterator end() const & { return {vertices.end(), vertices.end()}; }
 };
 
-struct Polygon : public BasePolygonalChain
+struct Polygon : BasePolygonalChain
 {
 	Iterator begin() const &
 	{
@@ -47,17 +48,13 @@ struct Polygon : public BasePolygonalChain
 	}
 
 	bool contains(Vector2 point) const;
+
+	// Returns true iff every neighborhood of the point contains
+	// a point inside the polygon in the given direction
+	bool limit_of_contains(Vector2 point, Vector2 dir) const;
 };
 
-struct MultiPolygon
-{
-	std::vector<Polygon> polygons;
-
-	bool contains(Vector2 point) const;
-	bool edge_intersects(const LineSegment& segment) const;
-};
-
-struct PolygonalChain : public BasePolygonalChain
+struct PolygonalChain : BasePolygonalChain
 {
 	Iterator begin() const &
 	{
@@ -66,28 +63,27 @@ struct PolygonalChain : public BasePolygonalChain
 		else
 			return {vertices.begin(), std::next(vertices.begin())};
 	}
+};
 
-	std::optional<Vector3> find_first_intersection(const Polygon& polygon) const;
-	
-	void for_each_intersecting_segment(const MultiPolygon& multipolygon, auto&& f) const
+template<std::derived_from<BasePolygonalChain> Component>
+struct MultiShape
+{
+	std::vector<Component> components;
+
+	bool edge_intersects(const LineSegment& segment) const
 	{
-		if (vertices.empty()) return;
+		for (auto& c : components)
+			for (LineSegment edge : c)
+				if (find_intersection(edge, segment).index())
+					return true;
 
-		bool inside = multipolygon.contains(vertices.front());
-
-		for (std::size_t segment_id = 0; segment_id + 1 < vertices.size(); ++segment_id)
-		{
-			const auto& a = vertices[segment_id];
-			const auto& b = vertices[segment_id + 1];
-
-			if (multipolygon.edge_intersects({a, b}))
-			{
-				f(segment_id);
-
-				inside = multipolygon.contains(b);
-			}
-			else if (inside)
-				f(segment_id);
-		}
+		return false;
 	}
 };
+
+struct MultiPolygon : MultiShape<Polygon>
+{
+	bool contains(Vector2 point) const;
+};
+
+using MultiPolygonalChain = MultiShape<PolygonalChain>;
