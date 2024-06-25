@@ -1,11 +1,11 @@
 #include "line_segment.h"
 #include <boost/test/unit_test.hpp>
 
-struct inits {
+struct TestLineSegments {
 	LineSegment testsegment= {Vector2{1,2},Vector2{3,4}};
 };
 
-BOOST_FIXTURE_TEST_SUITE( LineSegments, inits )
+BOOST_FIXTURE_TEST_SUITE( LineSegmentTest, TestLineSegments )
 
 BOOST_AUTO_TEST_CASE( segmentEval )
 {

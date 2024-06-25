@@ -1,15 +1,14 @@
 #include "vector.h"
 #include <boost/test/unit_test.hpp>
 
-
-struct inits {
+struct TestVectors {
 	Vector2 x2 = {2,3};
 	Vector2 y2 = {3,4};
 	Vector3 i3 = {4,6,2};
 	Vector3 j3 = {2,-2,6};
 };
 
-BOOST_FIXTURE_TEST_SUITE( Vectortest, inits )
+BOOST_FIXTURE_TEST_SUITE( VectorTest, TestVectors )
 
 BOOST_AUTO_TEST_CASE( Vector2Addition )
 {

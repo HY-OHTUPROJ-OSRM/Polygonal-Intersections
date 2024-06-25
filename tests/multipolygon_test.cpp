@@ -1,7 +1,7 @@
 #include "polygon.h"
 #include <boost/test/unit_test.hpp>
 
-struct inits {
+struct TestMultiPolygons {
 	Polygon testpoly1;
 	void init_poly()
 	{
@@ -12,10 +12,10 @@ struct inits {
 			Vector2_32{10, 20}
 		};
 	}
-	inits() : testpoly1() {init_poly();}
+	TestMultiPolygons() : testpoly1() {init_poly();}
 };
 
-BOOST_FIXTURE_TEST_SUITE( Multipolygon, inits )
+BOOST_FIXTURE_TEST_SUITE( Multipolygon, TestMultiPolygons )
 
 BOOST_AUTO_TEST_CASE( multipolyContainsVector )
 {
