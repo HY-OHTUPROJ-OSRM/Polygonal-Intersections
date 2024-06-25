@@ -692,3 +692,203 @@ BOOST_AUTO_TEST_CASE(interval_over_crossing_3)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+struct TestIntervalMapAndLineSegment : TestIntervalMap
+{
+	LineSegment segment = {{-4, -2}, {8, 4}};
+};
+
+BOOST_FIXTURE_TEST_SUITE(IntervalMapSegmentIntersectionTest, TestIntervalMapAndLineSegment)
+
+BOOST_AUTO_TEST_CASE(segment_through_edges)
+{
+	Polygon polygon = {
+		{2, -2},
+		{-1, 1},
+		{4, 1}
+	};
+
+	map.insert_at_intersections(segment, polygon, 11111);
+
+	check_interval_map(map, Value{{2, 6}, {1, 2}, 11111});
+}
+
+BOOST_AUTO_TEST_CASE(segment_through_vertices)
+{
+	Polygon polygon = {
+		{-2, -1},
+		{3, -2},
+		{4, 2},
+		{-1, 3}
+	};
+
+	map.insert_at_intersections(segment, polygon, 11111);
+
+	check_interval_map(map, Value{{1, 6}, {2, 3}, 11111});
+}
+
+BOOST_AUTO_TEST_CASE(single_intersection_point)
+{
+	Polygon polygon = {
+		{2, 1},
+		{0, 2},
+		{2, 3}
+	};
+
+	map.insert_at_intersections(segment, polygon, 11111);
+
+	check_interval_map(map);
+}
+
+BOOST_AUTO_TEST_CASE(collinear_intersection_1)
+{
+	Polygon polygon = {
+		{6, 3},
+		{-2, -1},
+		{-1, 2}
+	};
+
+	map.insert_at_intersections(segment, polygon, 11111);
+
+	check_interval_map(map, Value{{1, 6}, {5, 6}, 11111});
+}
+
+BOOST_AUTO_TEST_CASE(collinear_intersection_2)
+{
+	Polygon polygon = {
+		{6, 3},
+		{-2, -1},
+		{2, 0}
+	};
+
+	map.insert_at_intersections(segment, polygon, 11111);
+
+	check_interval_map(map, Value{{1, 6}, {5, 6}, 11111});
+}
+
+BOOST_AUTO_TEST_CASE(collinear_intersection_3)
+{
+	Polygon polygon = {
+		{2, 1},
+		{-2, -1},
+		{2, 4},
+		{5, 0}
+	};
+
+	map.insert_at_intersections(segment, polygon, 11111);
+
+	check_interval_map(map, Value{{1, 6}, {1, 2}, 11111});
+}
+
+BOOST_AUTO_TEST_CASE(collinear_intersection_4)
+{
+	Polygon polygon = {
+		{-2, -1},
+		{2, 1},
+		{2, 4},
+		{5, 0}
+	};
+
+	map.insert_at_intersections(segment, polygon, 11111);
+
+	check_interval_map(map, Value{{1, 6}, {1, 2}, 11111});
+}
+
+BOOST_AUTO_TEST_CASE(two_intersections)
+{
+	Polygon polygon = {
+		{1, -2},
+		{-3, 1},
+		{5, 0},
+		{5, 4},
+		{9, 0}
+	};
+
+	map.insert_at_intersections(segment, polygon, 11111);
+
+	check_interval_map(map,
+		Value{{3, 12}, {5,  12}, 11111},
+		Value{{5, 12}, {9,  12},     0},
+		Value{{9, 12}, {10, 12}, 11111}
+	);
+}
+
+BOOST_AUTO_TEST_CASE(start_inside)
+{
+	Polygon polygon = {
+		{-4, 0},
+		{-2, -3},
+		{-6, -2}
+	};
+
+	map.insert_at_intersections(segment, polygon, 11111);
+
+	check_interval_map(map, Value{{0}, {1, 12}, 11111});
+}
+
+BOOST_AUTO_TEST_CASE(end_inside)
+{
+	Polygon polygon = {
+		{6, 0},
+		{3, 3},
+		{9, 5}
+	};
+
+	map.insert_at_intersections(segment, polygon, 11111);
+
+	check_interval_map(map, Value{{2, 3}, {1}, 11111});
+}
+
+BOOST_AUTO_TEST_CASE(start_and_end_inside)
+{
+	Polygon polygon = {
+		{-4,-4},
+		{-6, 2},
+		{10, 7},
+		{10, 2},
+		{2, 4},
+	};
+
+	map.insert_at_intersections(segment, polygon, 11111);
+
+	check_interval_map(map,
+		Value{{0},    {1,  5}, 11111},
+		Value{{1, 5}, {5, 6},      0},
+		Value{{5, 6}, {1},     11111}
+	);
+}
+
+BOOST_AUTO_TEST_CASE(fully_inside)
+{
+	Polygon polygon = {
+		{-4,-4},
+		{-6, 2},
+		{10, 7},
+		{10, 2},
+		{2, -4},
+	};
+
+	map.insert_at_intersections(segment, polygon, 11111);
+
+	check_interval_map(map, Value{{0}, {1}, 11111});
+}
+
+BOOST_AUTO_TEST_CASE(fully_outside)
+{
+	Polygon polygon = {
+		{10, 6},
+		{-6, -2},
+		{-4, -4},
+		{10, 4},
+		{-4, -6},
+		{-10, 0},
+		{12, 8},
+		{14, 0}
+	};
+
+	map.insert_at_intersections(segment, polygon, 11111);
+
+	check_interval_map(map);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
