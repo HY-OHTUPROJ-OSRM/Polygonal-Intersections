@@ -69,6 +69,9 @@ struct MultiShape
 {
 	std::vector<Component> components;
 
+	MultiShape() = default;
+	MultiShape(std::initializer_list<Component> components) : components(components) {}
+
 	bool edge_intersects(const LineSegment& segment) const
 	{
 		for (auto& c : components)
@@ -82,6 +85,8 @@ struct MultiShape
 
 struct MultiPolygon : MultiShape<Polygon>
 {
+	using MultiShape::MultiShape;
+
 	bool contains(Vector2 point) const;
 };
 

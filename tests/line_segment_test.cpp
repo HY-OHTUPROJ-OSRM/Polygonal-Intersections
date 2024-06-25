@@ -1,79 +1,107 @@
 #include "line_segment.h"
+#include "test_utils.h"
 #include <boost/test/unit_test.hpp>
 
-struct TestLineSegments {
-	LineSegment testsegment= {Vector2{1,2},Vector2{3,4}};
+struct TestLineSegment
+{
+	LineSegment segment= {{1, 2}, {3, 4}};
 };
 
-BOOST_FIXTURE_TEST_SUITE( LineSegmentTest, TestLineSegments )
+BOOST_FIXTURE_TEST_SUITE(LineSegmentTest, TestLineSegment)
 
-BOOST_AUTO_TEST_CASE( segmentEval )
+BOOST_AUTO_TEST_CASE(eval)
 {
-	Rational x = {2,3};
-	BOOST_TEST(testsegment.eval(x).x == 7);
-	BOOST_TEST(testsegment.eval(x).y == 10);
-	BOOST_TEST(testsegment.eval(x).z == 3);
+	BOOST_CHECK_EQUAL(segment.eval({2, 3}), Vector3(7, 10, 3));
 }
 
-BOOST_AUTO_TEST_CASE( segmentProjection )
+BOOST_AUTO_TEST_CASE(contains_1)
 {
-	Vector2 vect1 = {5,9};
-	Vector2 vect2 = {2,4};
-	BOOST_TEST(testsegment.contains_projection(vect1) == false);
-	BOOST_TEST(testsegment.contains_projection(vect2) == true);
+	BOOST_TEST(segment.contains(segment.a));
 }
 
-BOOST_AUTO_TEST_CASE( findIntersectionParallel )
+BOOST_AUTO_TEST_CASE(contains_2)
 {
-	LineSegment testsegment2= {Vector2{2,4},Vector2{4,6}};
-
-	if (find_intersection(testsegment,testsegment2).index())
-		BOOST_FAIL("");
+	BOOST_TEST(segment.contains(segment.b));
 }
 
-BOOST_AUTO_TEST_CASE( findIntersectionParallelCollinearProjection )
+BOOST_AUTO_TEST_CASE(contains_3)
 {
-	LineSegment testsegment2= {Vector2{0,1},Vector2{5,6}};
+	BOOST_TEST(segment.contains({2, 3}));
+}
 
-	auto intersection = find_intersection(testsegment,testsegment2);
+BOOST_AUTO_TEST_CASE(contains_4)
+{
+	BOOST_TEST(!segment.contains({2, 4}));
+}
+
+BOOST_AUTO_TEST_CASE(contains_5)
+{
+	BOOST_TEST(!segment.contains({0, 2}));
+}
+
+BOOST_AUTO_TEST_CASE(contains_6)
+{
+	BOOST_TEST(!segment.contains({4, 4}));
+}
+
+BOOST_AUTO_TEST_CASE(contains_projection_1)
+{
+	BOOST_TEST(segment.contains_projection({2, 4}));
+}
+
+BOOST_AUTO_TEST_CASE(contains_projection_2)
+{
+	BOOST_TEST(!segment.contains_projection({5, 9}));
+}
+
+BOOST_AUTO_TEST_CASE(contains_projection_empty_segment_1)
+{
+	BOOST_TEST(LineSegment({1,2}, {1,2}).contains_projection({1, 2}));
+}
+
+BOOST_AUTO_TEST_CASE(contains_projection_empty_segment_2)
+{
+	BOOST_TEST(!LineSegment({1,2}, {1,2}).contains_projection({2, 4}));
+}
+
+BOOST_AUTO_TEST_CASE(find_intersection_parellel)
+{
+	auto intersection = find_intersection(segment, {{2, 4}, {4, 6}});
+
+	BOOST_TEST(std::holds_alternative<std::monostate>(intersection));
+}
+
+BOOST_AUTO_TEST_CASE(find_intersection_collinear_1)
+{
+	auto intersection = find_intersection(segment, {{0, 1}, {5, 6}});
 
 	BOOST_TEST(std::holds_alternative<RationalInterval>(intersection));
 }
 
-BOOST_AUTO_TEST_CASE( findIntersectionParallelColNoProjOverlap )
+BOOST_AUTO_TEST_CASE(find_intersection_collinear_2)
 {
-	LineSegment testsegment2= {Vector2{2,3},Vector2{9,10}};
-
-	auto intersection = find_intersection(testsegment,testsegment2);
-
-	BOOST_TEST(std::holds_alternative<RationalInterval>(intersection));
-	
-}
-
-BOOST_AUTO_TEST_CASE( findIntersectionParallelColNoProjNoOverlap )
-{
-	LineSegment testsegment2= {Vector2{4,5},Vector2{9,10}};
-
-	if (find_intersection(testsegment,testsegment2).index())
-		BOOST_FAIL("");
-}
-
-BOOST_AUTO_TEST_CASE( findIntersectionParallelColNoProjOverlapB )
-{
-	LineSegment testsegment2= {Vector2{9,10},Vector2{2,3}};
-
-	auto intersection = find_intersection(testsegment,testsegment2);
+	auto intersection = find_intersection(segment, {{2, 3}, {9, 10}});
 
 	BOOST_TEST(std::holds_alternative<RationalInterval>(intersection));
 }
 
-BOOST_AUTO_TEST_CASE( segmentProjectionDotSegment )
+BOOST_AUTO_TEST_CASE(find_intersection_collinear_3)
 {
-	LineSegment dots = {Vector2{1,2},Vector2{1,2}};
-	Vector2 vect = {1,2};
-	Vector2 vect2 = {2,4};
-	BOOST_TEST(dots.contains_projection(vect) == true);
-	BOOST_TEST(dots.contains_projection(vect2) == false);
+	auto intersection = find_intersection(segment, {{4, 5}, {9, 10}});
+
+	BOOST_TEST(std::holds_alternative<std::monostate>(intersection));
+}
+
+BOOST_AUTO_TEST_CASE(find_intersection_collinear_4)
+{
+	auto intersection = find_intersection(segment, {{9, 10}, {2, 3}});
+
+	BOOST_TEST(std::holds_alternative<RationalInterval>(intersection));
+}
+
+BOOST_AUTO_TEST_CASE(length)
+{
+	BOOST_CHECK_CLOSE(segment.length(), 2.8284271247461900976, 1e-9);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

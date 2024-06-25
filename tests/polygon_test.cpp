@@ -25,7 +25,7 @@ struct TestPolygon
 	};
 };
 
-BOOST_FIXTURE_TEST_SUITE(ContainsTest, TestPolygon)
+BOOST_FIXTURE_TEST_SUITE(PolygonContainsTest, TestPolygon)
 
 BOOST_AUTO_TEST_CASE(empty)
 {
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(point_on_overlapping_vertical_edges)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_FIXTURE_TEST_SUITE(LimitOfContainsTest, TestPolygon)
+BOOST_FIXTURE_TEST_SUITE(PolygonLimitOfContainsTest, TestPolygon)
 
 BOOST_AUTO_TEST_CASE(empty)
 {

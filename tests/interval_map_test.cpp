@@ -20,9 +20,9 @@ void check_interval_map(const IntervalMap& map, const auto&&... correct_values)
 	);
 }
 
-struct Inits { IntervalMap map; };
+struct TestIntervalMap { IntervalMap map; };
 
-BOOST_FIXTURE_TEST_SUITE(IntervalMapTest, Inits)
+BOOST_FIXTURE_TEST_SUITE(IntervalMapInsertionTest, TestIntervalMap)
 
 BOOST_AUTO_TEST_CASE(empty)
 {
@@ -31,7 +31,6 @@ BOOST_AUTO_TEST_CASE(empty)
 
 BOOST_AUTO_TEST_CASE(one_interval_1)
 {
-	IntervalMap map;
 	map.insert({{1, 3}, {2, 3}}, 11111);
 
 	check_interval_map(map, Value{{1, 3}, {2, 3}, 11111});
@@ -39,7 +38,6 @@ BOOST_AUTO_TEST_CASE(one_interval_1)
 
 BOOST_AUTO_TEST_CASE(one_interval_2)
 {
-	IntervalMap map;
 	map.insert({{0}, {1, 2}}, 11111);
 
 	check_interval_map(map, Value{{0}, {1, 2}, 11111});
@@ -47,7 +45,6 @@ BOOST_AUTO_TEST_CASE(one_interval_2)
 
 BOOST_AUTO_TEST_CASE(one_interval_3)
 {
-	IntervalMap map;
 	map.insert({{1, 2}, {1}}, 11111);
 
 	check_interval_map(map, Value{{1, 2}, {1}, 11111});
@@ -55,7 +52,6 @@ BOOST_AUTO_TEST_CASE(one_interval_3)
 
 BOOST_AUTO_TEST_CASE(one_interval_4)
 {
-	IntervalMap map;
 	map.insert({{0}, {1}}, 11111);
 
 	check_interval_map(map, Value{{0}, {1}, 11111});
