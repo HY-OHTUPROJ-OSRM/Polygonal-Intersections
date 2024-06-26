@@ -47,7 +47,7 @@ double LineSegment::new_average_speed(double og_speed, const std::vector<SpeedZo
 
 	const double total_dist = length();
 
-	bool travered = false;
+	bool traversed = false;
 	double traversed_dist = 0;
 	double traversed_time = 0;
 
@@ -61,7 +61,7 @@ double LineSegment::new_average_speed(double og_speed, const std::vector<SpeedZo
 
 		if (speed > 0)
 		{
-			travered = true;
+			traversed = true;
 			traversed_dist += dist;
 			traversed_time += dist / speed;
 		}
@@ -69,7 +69,7 @@ double LineSegment::new_average_speed(double og_speed, const std::vector<SpeedZo
 			return 0;
 	}
 
-	if (!travered) return og_speed;
+	if (!traversed) return og_speed;
 
 	const double remaining_dist = total_dist - traversed_dist;
 
