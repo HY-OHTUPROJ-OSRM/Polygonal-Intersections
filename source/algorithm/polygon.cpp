@@ -28,10 +28,7 @@ bool Polygon::contains(Vector2 point) const
 			continue;
 		}
 
-		const Vector2 u = edge.b - edge.a;
-		const Vector2 v = point - edge.a;
-
-		const int64_t det = Det(u, v);
+		const int64_t det = Det(edge.b - edge.a, point - edge.a);
 
 		if (det > 0) continue; // if the point is above the edge
 		if (det == 0) return true; // if the point is on the edge

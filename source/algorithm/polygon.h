@@ -3,7 +3,6 @@
 #include "vector.h"
 #include "rational.h"
 #include <concepts>
-#include <utility>
 #include <vector>
 
 struct BasePolygonalChain
@@ -11,14 +10,10 @@ struct BasePolygonalChain
 	std::vector<Vector2_32> vertices;
 
 	BasePolygonalChain() = default;
-
-	template<class It>
-	BasePolygonalChain(It begin, It end) : vertices(begin, end) {}
+	BasePolygonalChain(std::initializer_list<Vector2_32> vertices) : vertices(vertices) {}
 
 	template<class Range>
 	BasePolygonalChain(Range&& range) : vertices(std::begin(range), std::end(range)) {}
-
-	BasePolygonalChain(std::vector<Vector2_32>&& vertices) : vertices(std::move(vertices)) {}
 
 	struct Iterator
 	{
@@ -39,6 +34,8 @@ struct BasePolygonalChain
 
 struct Polygon : BasePolygonalChain
 {
+	using BasePolygonalChain::BasePolygonalChain;
+
 	Iterator begin() const &
 	{
 		if (vertices.begin() == vertices.end())
@@ -56,6 +53,8 @@ struct Polygon : BasePolygonalChain
 
 struct PolygonalChain : BasePolygonalChain
 {
+	using BasePolygonalChain::BasePolygonalChain;
+
 	Iterator begin() const &
 	{
 		if (vertices.begin() == vertices.end())
@@ -70,6 +69,9 @@ struct MultiShape
 {
 	std::vector<Component> components;
 
+	MultiShape() = default;
+	MultiShape(std::initializer_list<Component> components) : components(components) {}
+
 	bool edge_intersects(const LineSegment& segment) const
 	{
 		for (auto& c : components)
@@ -83,6 +85,8 @@ struct MultiShape
 
 struct MultiPolygon : MultiShape<Polygon>
 {
+	using MultiShape::MultiShape;
+
 	bool contains(Vector2 point) const;
 };
 
