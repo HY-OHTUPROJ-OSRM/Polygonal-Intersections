@@ -9,8 +9,6 @@ int main()
 	const uint64_t num_speed_zones        = read<uint64_t>();
 	const uint64_t num_paths              = read<uint64_t>();
 
-	if (num_paths == 0) return 0;
-
 	TrafficZones traffic_zones = read_traffic_zones(
 		num_polygon_roadblocks,
 		num_chain_roadblocks,
